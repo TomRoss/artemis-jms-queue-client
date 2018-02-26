@@ -29,6 +29,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.NamingException;
 
+import javax.jms.JMSContext;
+
 import org.activemq.jms.client.Settings;
 import org.activemq.jms.client.utils.ConnectionManager;
 import org.activemq.jms.client.utils.CountDownLatchWrapper;
@@ -82,6 +84,8 @@ public class JMSClientImpl implements JMSClient {
    private QueueSession queueSession = null;
    private TextMessage textMessage = null;
 
+   private JMSContext jmsContext = null;
+
    public JMSClientImpl(){
 
       throwException = Settings.getMessageThrowException();
@@ -121,6 +125,7 @@ public class JMSClientImpl implements JMSClient {
 
       queue = connectionManager.createDestination(this.queueName);
 
+      //jmsContext = connectionManager.createContext();
    }
 
    public void processMessages()  throws JMSClientException {

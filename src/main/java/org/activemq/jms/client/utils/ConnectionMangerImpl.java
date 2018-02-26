@@ -29,6 +29,8 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.jboss.logging.Logger;
 
+import javax.jms.JMSContext;
+
 import org.activemq.jms.client.Settings;
 
 public class ConnectionMangerImpl implements ConnectionManager {
@@ -73,6 +75,25 @@ public class ConnectionMangerImpl implements ConnectionManager {
       LOG.debugf("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
 
       return (T) qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
+   }
+
+
+   public JMSContext createContext() throws NamingException, JMSException {
+
+      if (useJndi){
+
+         qcf = objectStoreManager.getObject(Settings.getConnectionFactoryName());
+
+      } else {
+
+         qcf = (QueueConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
+
+      }
+
+
+      LOG.debugf("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
+
+      return (JMSContext) qcf.createContext(Settings.getUserName(), Settings.getPassword()) ;// createQueueConnection(Settings.getUserName(), Settings.getPassword());
    }
 
 
