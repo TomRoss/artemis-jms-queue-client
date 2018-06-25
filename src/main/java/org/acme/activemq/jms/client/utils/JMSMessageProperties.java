@@ -1,4 +1,4 @@
-package org.activemq.jms.client.utils;
+package org.acme.activemq.jms.client.utils;
 
 public interface JMSMessageProperties {
 

@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client.producer;
+package org.acme.activemq.jms.client.utils;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
+public class JMSClientException extends Exception {
 
-import org.activemq.jms.client.utils.JMSClientException;
+   public JMSClientException() {
+      super();
+   }
 
-public interface JMSClient extends Runnable {
+   public JMSClientException(String message) {
 
-   public void init()  throws JMSClientException, NamingException, JMSException;
+      super(message);
+   }
 
-   public void cleanUp() throws JMSException;
-
-   public void processMessages() throws JMSClientException;
-
-   public void printResults(String threadName, long totalTime ,long messageCount);
-
-   public String sessionTypeToString(int type);
-
-   public String getMessagePayLoad(int size);
-
+   public JMSClientException(String message, Throwable cause) {
+      super(message,cause);
+   }
 }

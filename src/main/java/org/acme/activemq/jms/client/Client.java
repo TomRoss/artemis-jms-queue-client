@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client;
+package org.acme.activemq.jms.client;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.activemq.jms.client.producer.JMSClient;
-import org.activemq.jms.client.producer.JMSClientImpl;
-import org.activemq.jms.client.utils.CountDownLatchWrapper;
-import org.activemq.jms.client.utils.JMSClientException;
-import org.activemq.jms.client.utils.ObjectStoreManager;
+import org.acme.activemq.jms.client.producer.JMSClient;
+import org.acme.activemq.jms.client.utils.CountDownLatchWrapper;
+import org.acme.activemq.jms.client.producer.JMSClientImpl;
+import org.acme.activemq.jms.client.utils.JMSClientException;
+import org.acme.activemq.jms.client.utils.ObjectStoreManager;
 
 import org.jboss.logging.Logger;
 
@@ -82,7 +82,17 @@ public class Client {
          LOG.errorf(jmsException,"[%s]Got JMSException: ", Thread.currentThread().getName());
 
          cLatch.shutDown();
+
+      } catch (Exception exception){
+
+         LOG.errorf(exception,"Unknown error, shutting down.");
+
+         cLatch.shutDown();
+
+         System.exit(-1);
+
       }
+
 
       LOG.info("All producers started.");
 

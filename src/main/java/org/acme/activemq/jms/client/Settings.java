@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client;
+package org.acme.activemq.jms.client;
 
 
 import javax.jms.Message;

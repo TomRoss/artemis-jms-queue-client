@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client.producer;
+package org.acme.activemq.jms.client.producer;
 
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
@@ -31,16 +31,16 @@ import javax.naming.NamingException;
 
 import javax.jms.JMSContext;
 
-import org.activemq.jms.client.Settings;
-import org.activemq.jms.client.utils.ConnectionManager;
-import org.activemq.jms.client.utils.CountDownLatchWrapper;
-import org.activemq.jms.client.utils.JMSClientException;
-import org.activemq.jms.client.utils.JMSMessageProperties;
-import org.activemq.jms.client.utils.ObjectStoreManager;
+import org.acme.activemq.jms.client.Settings;
+import org.acme.activemq.jms.client.utils.ConnectionManager;
+import org.acme.activemq.jms.client.utils.CountDownLatchWrapper;
+import org.acme.activemq.jms.client.utils.JMSClientException;
+import org.acme.activemq.jms.client.utils.JMSMessageProperties;
+import org.acme.activemq.jms.client.utils.ObjectStoreManager;
 
 import org.jboss.logging.Logger;
 
-import org.activemq.jms.client.utils.ConnectionMangerImpl;
+import org.acme.activemq.jms.client.utils.ConnectionMangerImpl;
 
 public class JMSClientImpl implements JMSClient {
    private static final Logger LOG = Logger.getLogger(JMSClientImpl.class);
@@ -119,7 +119,7 @@ public class JMSClientImpl implements JMSClient {
 
    }
 
-   public void init() throws JMSClientException, NamingException, JMSException {
+   public void init() throws Exception {
 
       queueConnection = connectionManager.createConnection();
 
@@ -197,7 +197,7 @@ public class JMSClientImpl implements JMSClient {
 
             if (dupDetect){
 
-               textMessage.setStringProperty(org.apache.activemq.artemis.api.core.Message.HDR_DUPLICATE_DETECTION_ID.toString(),Long.toString(System.currentTimeMillis()));
+               //textMessage.setStringProperty(org.apache.activemq.artemis.api.core.Message.HDR_DUPLICATE_DETECTION_ID.toString(),Long.toString(System.currentTimeMillis()));
 
             }
 

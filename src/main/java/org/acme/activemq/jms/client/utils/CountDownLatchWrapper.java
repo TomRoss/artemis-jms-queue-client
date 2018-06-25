@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client.utils;
+package org.acme.activemq.jms.client.utils;
 
 import java.util.concurrent.CountDownLatch;
 

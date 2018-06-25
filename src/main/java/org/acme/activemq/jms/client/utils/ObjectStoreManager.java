@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client.utils;
+package org.acme.activemq.jms.client.utils;
 
-import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.Hashtable;

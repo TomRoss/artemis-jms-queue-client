@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.activemq.jms.client.utils;
+package org.acme.activemq.jms.client.utils;
 
 import javax.jms.JMSException;
 import javax.jms.QueueConnectionFactory;
@@ -24,14 +24,14 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
-import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
 import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.jboss.logging.Logger;
 
-import javax.jms.JMSContext;
+import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
-import org.activemq.jms.client.Settings;
+import org.acme.activemq.jms.client.Settings;
 
 public class ConnectionMangerImpl implements ConnectionManager {
    private static final Logger LOG = Logger.getLogger(ConnectionMangerImpl.class);
@@ -40,6 +40,7 @@ public class ConnectionMangerImpl implements ConnectionManager {
    private ObjectStoreManager objectStoreManager =null;
    private QueueConnectionFactory qcf =null;
    private TransportConfiguration transportConfiguration = null;
+
 
    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi){
 
@@ -52,61 +53,43 @@ public class ConnectionMangerImpl implements ConnectionManager {
          transportConfiguration = new TransportConfiguration(NettyConnectorFactory.class.getName(),parseUrl(Settings.getConnectUrl()));
 
       }
-
       if (LOG.isDebugEnabled()) {
          LOG.debug("Connection manager created.");
       }
    }
 
 
-   public <T> T createConnection() throws NamingException, JMSException {
+   public <T> T createConnection() throws Exception {
 
-      if (useJndi){
+
+      if (Settings.useJndi()){
 
          qcf = objectStoreManager.getObject(Settings.getConnectionFactoryName());
 
       } else {
 
-         qcf = (QueueConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
+         qcf = (QueueConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
 
       }
-
 
       LOG.debugf("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
 
       return (T) qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
    }
 
-
-   public JMSContext createContext() throws NamingException, JMSException {
-
-      if (useJndi){
-
-         qcf = objectStoreManager.getObject(Settings.getConnectionFactoryName());
-
-      } else {
-
-         qcf = (QueueConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
-
-      }
-
-
-      LOG.debugf("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
-
-      return (JMSContext) qcf.createContext(Settings.getUserName(), Settings.getPassword()) ;// createQueueConnection(Settings.getUserName(), Settings.getPassword());
-   }
-
-
    public <T> T createDestination(String destinationName) throws NamingException, JMSException{
 
-      LOG.infof("Creating destination '%s'.",destinationName);
-      if (useJndi) {
+      if (Settings.useJndi()) {
+
+         LOG.infof("Creating destination '%s'.", destinationName);
 
          return (T) objectStoreManager.getObject(destinationName);
 
       } else {
 
-         return (T) ActiveMQJMSClient.createQueue(destinationName);
+         LOG.infof("Creating destination '%s'.", destinationName);
+
+         return (T) ActiveMQJMSClient.createQueue(Settings.getQueueName());
 
       }
    }
