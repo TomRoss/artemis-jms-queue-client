@@ -18,7 +18,7 @@
       <jboss.logging.version>3.3.1.Final-redhat-1</jboss.logging.version>
       <jboss.log.manager.version>2.0.7.Final-redhat-1</jboss.log.manager.version>
 
-      <artemis.client.version>2.4.0.amq-711002-redhat-1</artemis.client.version>
+      <artemis.client.version>2.6.1.amq-720004-redhat-1</artemis.client.version>
 
       <!-- maven-jar-plugin -->
       <jar.plugin.version>3.0.2</jar.plugin.version>
@@ -38,11 +38,6 @@
    <dependencyManagement>
       <dependencies>
 
-         <dependency>
-            <groupId>org.apache.qpid</groupId>
-            <artifactId>qpid-jms-client</artifactId>
-            <version>0.31.0.redhat-2</version>
-         </dependency>
          <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-jms-client</artifactId>
@@ -68,10 +63,6 @@
 
    <dependencies>
 
-      <dependency>
-         <groupId>org.apache.qpid</groupId>
-         <artifactId>qpid-jms-client</artifactId>
-      </dependency>
 
      <dependency>
          <groupId>org.apache.activemq</groupId>
