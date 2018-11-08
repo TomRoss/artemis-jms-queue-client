@@ -249,6 +249,8 @@ public class JMSClientImpl implements JMSClient {
 
       } catch (JMSException jmsEx) {
 
+         Exception ex = jmsEx.getLinkedException();
+
          LOG.errorf(jmsEx,"[%s] Got JMS Exception - ",threadName);
 
       } catch (Exception ex){

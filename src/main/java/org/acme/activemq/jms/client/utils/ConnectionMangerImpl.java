@@ -75,6 +75,7 @@ public class ConnectionMangerImpl implements ConnectionManager {
       LOG.debugf("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
 
       return (T) qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
+      //return (T) qcf.createQueueConnection("uid=first","secret");
    }
 
    public <T> T createDestination(String destinationName) throws NamingException, JMSException{
