@@ -61,7 +61,7 @@ public class Main {
       LOG.info("\tpassword - user password [quick123+]");
       LOG.info("\tconnection.name - connection factory name. [ConnectionFactory]");
       LOG.info("\tqueue.name - queue name. [jms/queue/testQueue]");
-      LOG.info("\tmessage.number - number of message to send. [1]");
+      LOG.info("\tmessage.count - number of message to send. [1]");
       LOG.info("\tmessage.send.delay - delay between each message send [0] (in milliseconds)");
       LOG.info("\tmessage.consume.delay - delay between message consumption [0] (in milliseconds)");
       LOG.info("\tmessage.scheduled.delay - scheduled message delay (in milliseconds)");
@@ -70,7 +70,7 @@ public class Main {
       LOG.info("\tmessage.group - sets the value of JMSXGroupID");
       LOG.info("\tmessage.priority - message priority [Message.DEFALUT_PRIORITY]");
       LOG.info("\tmessage.size - message size in KB");
-      LOG.info("\tclient.number - number of JMS clients. [1]");
+      LOG.info("\tclient.count - number of JMS clients. [1]");
       LOG.info("\tsession.transacted - is the JMS session transacted. [false]");
       LOG.info("\tbatch.size - transaction batch size. [1]");
       LOG.info("\tlog.batch.size - logging batch size. [10]");

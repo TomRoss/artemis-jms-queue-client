@@ -42,7 +42,7 @@ public class Settings {
 
    private static final String CONNECTION_NAME_PROP = "connection.name";
 
-   private static final String MESSAGE_COUNT_PROP = "message.number";
+   private static final String MESSAGE_COUNT_PROP = "message.count";
 
    private static final String MESSAGE_THROW_EXCEPTION_PROP = "message.throw.exception";
 
@@ -62,7 +62,7 @@ public class Settings {
 
    private static final String MESSAGE_SIZE_PROP = "message.size";
 
-   private static final String NUMBER_OF_CLIENTS_PROP = "client.number";
+   private static final String NUMBER_OF_CLIENTS_PROP = "client.count";
 
    private static final String SESSION_TRANSACTED_PROP = "session.transacted";
 

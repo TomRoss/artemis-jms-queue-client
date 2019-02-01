@@ -28,6 +28,7 @@ import org.acme.activemq.jms.client.producer.JMSClientImpl;
 import org.acme.activemq.jms.client.utils.JMSClientException;
 import org.acme.activemq.jms.client.utils.ObjectStoreManager;
 
+import org.acme.activemq.jms.client.utils.Results;
 import org.jboss.logging.Logger;
 
 public class Client {
@@ -36,7 +37,7 @@ public class Client {
    private JMSClient queueProducer = null;
    private CountDownLatchWrapper cLatch = null;
    private ObjectStoreManager objectStoreManager = null;
-
+   private Results results = new Results();
 
    public Client()
    {
@@ -57,7 +58,7 @@ public class Client {
 
          for (int i = 0; i < clientCnt; i++) {
 
-            queueProducer = new JMSClientImpl(objectStoreManager, cLatch);
+            queueProducer = new JMSClientImpl(objectStoreManager, cLatch,results);
 
             queueProducer.init();
 
@@ -127,7 +128,9 @@ public class Client {
          }
       }
 
-      LOG.info(" === Client finished === ");
+      LOG.info(" === Clients finished === ");
+
+      results.printResults();
 
    }
 }

@@ -22,25 +22,24 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.naming.NamingException;
 
-import javax.jms.JMSContext;
+
 
 import org.acme.activemq.jms.client.Settings;
-import org.acme.activemq.jms.client.utils.ConnectionManager;
+import org.acme.activemq.jms.client.utils.Result;
+import org.acme.activemq.jms.client.utils.Results;
 import org.acme.activemq.jms.client.utils.CountDownLatchWrapper;
-import org.acme.activemq.jms.client.utils.JMSClientException;
-import org.acme.activemq.jms.client.utils.JMSMessageProperties;
 import org.acme.activemq.jms.client.utils.ObjectStoreManager;
+import org.acme.activemq.jms.client.utils.ConnectionManager;
+import org.acme.activemq.jms.client.utils.JMSClientException;
+import org.acme.activemq.jms.client.utils.ConnectionMangerImpl;
+import org.acme.activemq.jms.client.utils.JMSMessageProperties;
 
 import org.jboss.logging.Logger;
-
-import org.acme.activemq.jms.client.utils.ConnectionMangerImpl;
 
 public class JMSClientImpl implements JMSClient {
    private static final Logger LOG = Logger.getLogger(JMSClientImpl.class);
@@ -49,6 +48,8 @@ public class JMSClientImpl implements JMSClient {
    private CountDownLatchWrapper latch = null;
    private ObjectStoreManager objectStoreManager = null;
    private ConnectionManager connectionManager = null;
+   private Results results = null;
+   private Result result = new Result();
    private boolean sessionTransacted = false;
    private boolean throwException = false;
 
@@ -64,7 +65,6 @@ public class JMSClientImpl implements JMSClient {
    private int txBatchSize = 0;
    private int logBatchSize = 0;
    private int messageCount = 0;
-   private int messagesReceivedCnt = 0;
    private int messagePriority = Message.DEFAULT_PRIORITY;
    private int messageSize = 0;
    private boolean dupDetect = false;
@@ -76,15 +76,12 @@ public class JMSClientImpl implements JMSClient {
 
 
    // JMS section
-   private Message message = null;
    private Queue queue = null;
-   private QueueConnectionFactory qcf = null;
    private QueueConnection queueConnection = null;
    private QueueSender queueSender = null;
    private QueueSession queueSession = null;
    private TextMessage textMessage = null;
 
-   private JMSContext jmsContext = null;
 
    public JMSClientImpl(){
 
@@ -98,6 +95,7 @@ public class JMSClientImpl implements JMSClient {
       messageConsumerDelay = Settings.getMessageConsumerDelay();
       messageExpiration = Settings.getMsgExpire();
       messageSize = Settings.getMessageSize();
+      messagePriority = Settings.getMessagePriority();
       receiveTimeout = Settings.getReceiveTimeout();
       messageCount = Settings.getMessageCount();
       hostName = Settings.getLocalHostName();
@@ -105,7 +103,7 @@ public class JMSClientImpl implements JMSClient {
 
    }
 
-   public JMSClientImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch){
+   public JMSClientImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch, Results results){
 
       this();
 
@@ -114,6 +112,8 @@ public class JMSClientImpl implements JMSClient {
       this.objectStoreManager = objectStoreManager;
 
       this.connectionManager = new ConnectionMangerImpl(objectStoreManager,Settings.useJndi());
+
+      this.results = results;
 
       LOG.debug("JMSClient created.");
 
@@ -125,7 +125,6 @@ public class JMSClientImpl implements JMSClient {
 
       queue = connectionManager.createDestination(this.queueName);
 
-      //jmsContext = connectionManager.createContext();
    }
 
    public void processMessages()  throws JMSClientException {
@@ -201,8 +200,6 @@ public class JMSClientImpl implements JMSClient {
 
             }
 
-            messagePriority = 8;
-
             queueSender.send(textMessage, DeliveryMode.PERSISTENT, messagePriority, messageExpiration);
 
             if ( this.sessionTransacted && ((  i % this.txBatchSize ) == 0)){
@@ -245,7 +242,6 @@ public class JMSClientImpl implements JMSClient {
 
          totalTime = finishTime - startTime;
 
-         printResults(Thread.currentThread().getName(), totalTime,messageCount);
 
       } catch (JMSException jmsEx) {
 
@@ -273,13 +269,6 @@ public class JMSClientImpl implements JMSClient {
 
          }
       }
-   }
-
-   public void printResults(String threadName, long totalTime, long messageCount){
-
-      LOG.infof("[%s] ******** Results ********",threadName);
-
-      LOG.infof("Total %d messages sent in %d milliseconds.",messageCount,totalTime);
    }
 
    public String getMessagePayLoad(int size){
@@ -356,9 +345,16 @@ public class JMSClientImpl implements JMSClient {
          LOG.error("ERROR",exitError);
 
          if (totalTime == 0){
+
             totalTime = System.currentTimeMillis() - startTime;
+
          }
-         printResults(Thread.currentThread().getName(),totalTime,messageCount);
+
+         result.setTotalTime(totalTime);
+
+         result.setMessagecount(messageCount);
+
+         results.setResult(threadName,result);
       }
    }
 }

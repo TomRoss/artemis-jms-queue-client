@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.acme.activemq.jms.client.producer;
+package org.acme.activemq.jms.client.utils;
 
-import javax.jms.JMSException;
-import javax.naming.NamingException;
+public class Result {
+    private int messagecount = 0;
+    private long totalTime = 0;
 
-import org.acme.activemq.jms.client.utils.JMSClientException;
+    public int getMessagecount() {
+        return messagecount;
+    }
 
-public interface JMSClient extends Runnable {
+    public void setMessagecount(int messagecount) {
+        this.messagecount = messagecount;
+    }
 
-   public void init()  throws Exception;
+    public long getTotalTime() {
+        return totalTime;
+    }
 
-   public void cleanUp() throws JMSException;
-
-   public void processMessages() throws JMSClientException;
-
-   //public void printResults(String threadName, long totalTime ,long messageCount);
-
-   public String sessionTypeToString(int type);
-
-   public String getMessagePayLoad(int size);
-
+    public void setTotalTime(long totalTime) {
+        this.totalTime = totalTime;
+    }
 }
