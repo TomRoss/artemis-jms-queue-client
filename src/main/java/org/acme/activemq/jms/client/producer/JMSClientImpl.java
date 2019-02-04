@@ -49,7 +49,7 @@ public class JMSClientImpl implements JMSClient {
    private ObjectStoreManager objectStoreManager = null;
    private ConnectionManager connectionManager = null;
    private Results results = null;
-   private Result result = new Result();
+   private Result result = null;
    private boolean sessionTransacted = false;
    private boolean throwException = false;
 
@@ -100,6 +100,8 @@ public class JMSClientImpl implements JMSClient {
       messageCount = Settings.getMessageCount();
       hostName = Settings.getLocalHostName();
       queueName = Settings.getQueueName();
+
+      result = new Result();
 
    }
 
@@ -340,10 +342,6 @@ public class JMSClientImpl implements JMSClient {
 
          processMessages();
 
-      } catch (JMSClientException exitError) {
-
-         LOG.error("ERROR",exitError);
-
          if (totalTime == 0){
 
             totalTime = System.currentTimeMillis() - startTime;
@@ -355,6 +353,11 @@ public class JMSClientImpl implements JMSClient {
          result.setMessagecount(messageCount);
 
          results.setResult(threadName,result);
+
+      } catch (JMSClientException exitError) {
+
+         LOG.errorf(exitError,"ERROR");
+
       }
    }
 }

@@ -8,7 +8,7 @@
 
    <groupId>org.activemq.jms.queue.producer</groupId>
    <artifactId>artemis-jms-queue-producer</artifactId>
-   <version>2.4.0.amq-711002-redhat-1</version>
+   <version>7.2.3</version>
 
    <properties>
 
@@ -25,6 +25,8 @@
       <sure-fire.plugin.version>2.20.1</sure-fire.plugin.version>
       <!-- maven-compiler-plugin -->
       <compiler.pluging.version>3.7.0</compiler.pluging.version>
+      <exec.plugin.version>1.5.0</exec.plugin.version>
+
       <maven.compiler.target>1.8</maven.compiler.target>
       <maven.compiler.source>1.8</maven.compiler.source>
 
@@ -112,7 +114,7 @@
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>exec-maven-plugin</artifactId>
-               <version>1.5.0</version>
+               <version>${exec.plugin.version}</version>
                <executions>
                   <execution>
                      <goals>
