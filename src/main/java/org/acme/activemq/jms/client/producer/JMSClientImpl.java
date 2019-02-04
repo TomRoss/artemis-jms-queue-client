@@ -308,9 +308,9 @@ public class JMSClientImpl implements JMSClient {
 
    public void cleanUp() throws JMSException {
 
-      if (LOG.isDebugEnabled()) {
+      if (LOG.isInfoEnabled()) {
 
-         LOG.debug("Cleaning up JMS resources");
+         LOG.infof("[%s] Cleaning up JMS resources",threadName);
 
       }
 
