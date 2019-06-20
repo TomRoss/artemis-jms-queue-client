@@ -34,7 +34,7 @@ public class Settings {
 
    private static final String RECEIVE_TIME_OUT_PROP = "receive.timeout";
 
-   private static final String CONNECT_URL = "connect.url";
+   private static final String CONNECT_URL = "connection.url";
 
    private static final String USE_JNDI = "use.jndi";
 
