@@ -38,8 +38,9 @@ public class ConnectionMangerImpl implements ConnectionManager {
    private boolean useJndi = true;
    private Hashtable<String,String> env = null;
    private ObjectStoreManager objectStoreManager =null;
-   private QueueConnectionFactory qcf =null;
+   private QueueConnectionFactory qcf = null;
    private TransportConfiguration transportConfiguration = null;
+   private ActiveMQConnectionFactory amqCF = null;
 
 
    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi){
@@ -68,8 +69,11 @@ public class ConnectionMangerImpl implements ConnectionManager {
 
       } else {
 
-         qcf = (QueueConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
+         amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
 
+         amqCF.setBlockOnDurableSend(false);
+         amqCF.setBrokerURL(Settings.getConnectUrl());
+         qcf = (QueueConnectionFactory) amqCF;
       }
 
       LOG.infof("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());

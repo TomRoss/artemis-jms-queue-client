@@ -18,7 +18,7 @@
       <jboss.logging.version>3.3.1.Final-redhat-1</jboss.logging.version>
       <jboss.log.manager.version>2.0.7.Final-redhat-1</jboss.log.manager.version>
 
-      <artemis.client.version>2.6.3.redhat-00004</artemis.client.version>
+      <artemis.client.version>2.9.0.redhat-00005</artemis.client.version>
 
       <!-- maven-jar-plugin -->
       <jar.plugin.version>3.0.2</jar.plugin.version>
