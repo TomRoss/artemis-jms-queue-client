@@ -67,12 +67,15 @@ public class ConnectionMangerImpl implements ConnectionManager {
 
          qcf = objectStoreManager.getObject(Settings.getConnectionFactoryName());
 
+         amqCF = (ActiveMQConnectionFactory) qcf;
+         amqCF.setBlockOnDurableSend(false);
+
       } else {
 
          amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
 
          amqCF.setBlockOnDurableSend(false);
-         amqCF.setBrokerURL(Settings.getConnectUrl());
+         //amqCF.setBrokerURL(Settings.getConnectUrl());
          qcf = (QueueConnectionFactory) amqCF;
       }
 
