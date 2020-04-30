@@ -8,7 +8,7 @@
 
    <groupId>org.activemq.jms.queue.producer</groupId>
    <artifactId>artemis-jms-queue-producer</artifactId>
-   <version>7.2.3</version>
+   <version>7.6.0</version>
 
    <properties>
 
@@ -21,11 +21,11 @@
       <artemis.client.version>2.11.0.redhat-00005</artemis.client.version>
 
       <!-- maven-jar-plugin -->
-      <jar.plugin.version>3.0.2</jar.plugin.version>
+      <jar.plugin.version>3.2.0</jar.plugin.version>
       <sure-fire.plugin.version>2.20.1</sure-fire.plugin.version>
       <!-- maven-compiler-plugin -->
-      <compiler.pluging.version>3.7.0</compiler.pluging.version>
-      <exec.plugin.version>1.5.0</exec.plugin.version>
+      <compiler.pluging.version>3.8.1</compiler.pluging.version>
+      <exec.plugin.version>1.6.0</exec.plugin.version>
 
       <maven.compiler.target>1.8</maven.compiler.target>
       <maven.compiler.source>1.8</maven.compiler.source>

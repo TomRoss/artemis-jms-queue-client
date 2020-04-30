@@ -76,6 +76,10 @@ public class Settings {
 
    private static final String USER_PASSWORD_PROP = "password";
 
+   private static final String RECONNECT_ATTEMPTS = "reconnect.attempts";
+
+   private static final String RECONNECT_DELAY = "reconnect.delay";
+
    private static String localHostName = null;
 
    public static int exitStatus = 0;
@@ -252,4 +256,13 @@ public class Settings {
       return Boolean.parseBoolean(System.getProperty(USE_JNDI,"true"));
 
    }
+
+   public static int getReconnectAttempts(){
+      return Integer.parseInt(System.getProperty(RECONNECT_ATTEMPTS,"15"));
+   }
+
+   public static long getReconnectDelay(){
+      return Long.parseLong(System.getProperty(RECONNECT_DELAY,"10000"));
+   }
+
 }

@@ -41,6 +41,7 @@ public class ConnectionMangerImpl implements ConnectionManager {
    private QueueConnectionFactory qcf = null;
    private TransportConfiguration transportConfiguration = null;
    private ActiveMQConnectionFactory amqCF = null;
+   private String threadName = Thread.currentThread().getName();
 
 
    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi){
@@ -102,6 +103,20 @@ public class ConnectionMangerImpl implements ConnectionManager {
       }
    }
 
+   @Override
+   public <T> T getConnection(String connectionName) throws JMSException, NamingException {
+      LOG.infof("[%s] Fetching destination '%s'.", threadName, connectionName);
+
+      return (T) objectStoreManager.getObject(connectionName);
+
+   }
+
+   @Override
+   public <T> T getDestination(String destinationName) throws JMSException, NamingException {
+      LOG.infof("[%s] Fetching destination '%s'.", Thread.currentThread().getName(), destinationName);
+
+      return (T) objectStoreManager.getObject(destinationName);
+   }
 
    public String toString(){
       StringBuilder str = new StringBuilder();

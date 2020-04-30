@@ -67,7 +67,7 @@ public class Main {
       LOG.info("\tmessage.scheduled.delay - scheduled message delay (in milliseconds)");
       LOG.info("\tmessage.throw.exception - throw exception when consuming message [false]");
       LOG.info("\tmessage.expire - expire message after x millisends [0] (in milliseconds)");
-      LOG.info("\tmessage.group - sets the value of JMSXGroupID");
+      LOG.info("\tmessage.group - sets the value of JMSXGroupID [no group]");
       LOG.info("\tmessage.priority - message priority [Message.DEFALUT_PRIORITY]");
       LOG.info("\tmessage.size - message size in KB");
       LOG.info("\tclient.count - number of JMS clients. [1]");
