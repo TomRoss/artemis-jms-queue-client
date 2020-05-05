@@ -489,7 +489,7 @@ public class JMSClientImpl implements JMSClient {
 
         @Override
         public void onException(JMSException exception) {
-            LOG.warnf(exception, "[%s] Exception handler called on connection.", threadName);
+            LOG.warnf(exception, "[%s] * * * * Exception handler called on connection * * * *", threadName);
 
             disconnect();
 
