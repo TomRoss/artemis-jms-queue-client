@@ -61,6 +61,7 @@ public class Main {
       LOG.info("\tpassword - user password [quick123+]");
       LOG.info("\tconnection.name - connection factory name. [ConnectionFactory]");
       LOG.info("\tqueue.name - queue name. [jms/queue/testQueue]");
+      LOG.info("\tqueue.auto-create - auto create queue [false]");
       LOG.info("\tmessage.count - number of message to send. [1]");
       LOG.info("\tmessage.send.delay - delay between each message send [0] (in milliseconds)");
       LOG.info("\tmessage.consume.delay - delay between message consumption [0] (in milliseconds)");
@@ -75,6 +76,8 @@ public class Main {
       LOG.info("\tbatch.size - transaction batch size. [1]");
       LOG.info("\tlog.batch.size - logging batch size. [10]");
       LOG.info("\tdup.detect - duplicate message detection. [false]");
+      LOG.info("\treconnect.attempts - how many times to try to reconnect [15]");
+      LOG.info("\treconnect.delay - how long to wait between reconnection attempts [10 seconds]");
 
       LOG.info("************************************");
    }

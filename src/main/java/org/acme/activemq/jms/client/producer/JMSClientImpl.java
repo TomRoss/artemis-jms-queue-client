@@ -42,6 +42,7 @@ import org.acme.activemq.jms.client.utils.ConnectionManager;
 import org.acme.activemq.jms.client.utils.JMSClientException;
 import org.acme.activemq.jms.client.utils.ConnectionMangerImpl;
 import org.acme.activemq.jms.client.utils.JMSMessageProperties;
+import org.acme.activemq.jms.client.utils.Helper;
 
 import org.jboss.logging.Logger;
 
@@ -73,6 +74,8 @@ public class JMSClientImpl implements JMSClient {
     private int messageSize = 0;
     private boolean dupDetect = false;
     private boolean clientDone = false;
+    private boolean queueAutoCreate = false;
+    private boolean useJNDI = true;
 
     private String messageGroupName = null;
     private String hostName = null;
@@ -114,6 +117,10 @@ public class JMSClientImpl implements JMSClient {
         queueName = Settings.getQueueName();
         reconnectAttempts = Settings.getReconnectAttempts();
         reconnectDelay = Settings.getReconnectDelay();
+        queueAutoCreate = Settings.getQueueAutoCreate();
+        useJNDI = Settings.getUseJNDI();
+        threadName = Thread.currentThread().getName();
+
         result = new Result();
 
     }
@@ -126,7 +133,7 @@ public class JMSClientImpl implements JMSClient {
 
         this.objectStoreManager = objectStoreManager;
 
-        this.connectionManager = new ConnectionMangerImpl(objectStoreManager, Settings.useJndi());
+        this.connectionManager = new ConnectionMangerImpl(objectStoreManager, Settings.getUseJNDI());
 
         this.results = results;
 
@@ -134,15 +141,30 @@ public class JMSClientImpl implements JMSClient {
 
     }
 
-    public void init() throws Exception {
+    public boolean init() throws Exception {
+        int i = 1;
+        while( i <= reconnectAttempts) {
 
-        createJMSObjects();
+            if (createJMSObjects()){
 
+                return true;
+
+            } else {
+
+                LOG.warnf("[%s] Failed to connect, retrying %d. Total retry attempts %d, reconnect delay %d milliseconds",threadName,i,Settings.getReconnectAttempts(),Settings.getReconnectDelay());
+
+                Helper.doDelay(Settings.getReconnectDelay());
+
+            }
+
+            i++;
+        }
+
+        return false;
     }
 
     public void processMessages() throws JMSClientException {
         int i = 1;
-        threadName = Thread.currentThread().getName();
 
         LOG.infof("[%s] <<< Starting producer thread >>>", threadName);
 
@@ -389,13 +411,21 @@ public class JMSClientImpl implements JMSClient {
         }
     }
 
-    private void createJMSObjects() {
+    private boolean createJMSObjects() {
 
         try {
 
             LOG.infof("[%s] Creating JMS resources", threadName);
 
-            qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
+            if (Settings.getUseJNDI()) {
+
+                qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
+
+            } else {
+
+                qcf  = connectionManager.getConnection();
+
+            }
 
             queueConnection = qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
 
@@ -404,8 +434,6 @@ public class JMSClientImpl implements JMSClient {
             queueConnection.start();
 
             LOG.infof("[%s] Connection started. Starting receiving messages.", threadName);
-
-            queue = connectionManager.getDestination(this.queueName);
 
             if (this.sessionTransacted) {
 
@@ -418,19 +446,33 @@ public class JMSClientImpl implements JMSClient {
 
             LOG.infof("[%s] Created queue session '%s'.", threadName, this.sessionTypeToString(queueSession.getAcknowledgeMode()));
 
+            if (useJNDI) {
+
+                queue = connectionManager.getDestination(this.queueName);
+
+            } else {
+
+                queue = queueSession.createQueue(Helper.getQueueName(queueName));
+
+            }
+
             queueSender = queueSession.createSender(queue);
 
             LOG.infof("[%s] Queue receiver for queue '%s' created.", threadName, queueSender.getQueue().getQueueName());
 
+            return true;
 
         } catch (JMSException jmsException) {
 
             LOG.errorf(jmsException, "JMS Error");
 
+            return false;
+
         } catch (NamingException namingException) {
 
             LOG.errorf(namingException, "Naming Error");
 
+            return false;
         }
     }
 

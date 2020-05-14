@@ -60,10 +60,17 @@ public class Client {
 
             queueProducer = new JMSClientImpl(objectStoreManager, cLatch,results);
 
-            queueProducer.init();
+            if (queueProducer.init()) {
 
-            executor.execute(queueProducer);
+               executor.execute(queueProducer);
 
+            } else {
+
+               cLatch.shutDown();
+
+               break;
+
+            }
          }
 
       } catch (NamingException namingException) {

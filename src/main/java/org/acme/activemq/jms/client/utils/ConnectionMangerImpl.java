@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,123 +34,124 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.acme.activemq.jms.client.Settings;
 
 public class ConnectionMangerImpl implements ConnectionManager {
-   private static final Logger LOG = Logger.getLogger(ConnectionMangerImpl.class);
-   private boolean useJndi = true;
-   private Hashtable<String,String> env = null;
-   private ObjectStoreManager objectStoreManager =null;
-   private QueueConnectionFactory qcf = null;
-   private TransportConfiguration transportConfiguration = null;
-   private ActiveMQConnectionFactory amqCF = null;
-   private String threadName = Thread.currentThread().getName();
+    private static final Logger LOG = Logger.getLogger(ConnectionMangerImpl.class);
+    private boolean useJndi = true;
+    private Hashtable<String, String> env = null;
+    private ObjectStoreManager objectStoreManager = null;
+    private QueueConnectionFactory qcf = null;
+    private TransportConfiguration transportConfiguration = null;
+    private ActiveMQConnectionFactory amqCF = null;
+    private String threadName = Thread.currentThread().getName();
 
 
-   public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi){
+    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi) {
 
-      this.objectStoreManager = objectStoreManager;
+        this.objectStoreManager = objectStoreManager;
 
-      this.useJndi = useJndi;
+        this.useJndi = useJndi;
 
-      if (!useJndi){
+        if (!useJndi) {
 
-         transportConfiguration = new TransportConfiguration(NettyConnectorFactory.class.getName(),parseUrl(Settings.getConnectUrl()));
+            transportConfiguration = new TransportConfiguration(NettyConnectorFactory.class.getName(), parseUrl(Settings.getConnectUrl()));
 
-      }
-      if (LOG.isDebugEnabled()) {
-         LOG.debug("Connection manager created.");
-      }
-   }
-
-
-   public <T> T createConnection() throws Exception {
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Connection manager created.");
+        }
+    }
 
 
-      if (Settings.useJndi()){
+    public <T> T getConnection() throws JMSException {
 
-         qcf = objectStoreManager.getObject(Settings.getConnectionFactoryName());
+        LOG.debugf("[%s] Creating connection with URL [%s]",threadName,Settings.getConnectUrl());
 
-         amqCF = (ActiveMQConnectionFactory) qcf;
-         amqCF.setBlockOnDurableSend(false);
+        Object obj = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
 
-      } else {
+        LOG.debugf("[%s] Connection [%s] created",threadName,Settings.getConnectUrl());
 
-         amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
+        return (T) obj;
+    }
 
-         amqCF.setBlockOnDurableSend(false);
-         //amqCF.setBrokerURL(Settings.getConnectUrl());
-         qcf = (QueueConnectionFactory) amqCF;
-      }
+    /*public <T> T createConnection() throws Exception {
 
-      LOG.infof("Creating connection to %s with user:password %s:%s''.",Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
 
-      return (T) qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
+        amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
 
-   }
+        amqCF.setBlockOnDurableSend(false);
+        amqCF.setBrokerURL(Settings.getConnectUrl());
+        qcf = (QueueConnectionFactory) amqCF;
 
-   public <T> T createDestination(String destinationName) throws NamingException, JMSException{
+        LOG.infof("Creating connection to %s with user:password %s:%s''.", Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
 
-      if (Settings.useJndi()) {
+        return (T) qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
 
-         LOG.infof("Creating destination '%s'.", destinationName);
+    } */
 
-         return (T) objectStoreManager.getObject(destinationName);
+    public <T> T createDestination(String destinationName) throws NamingException, JMSException {
 
-      } else {
+        if (Settings.getUseJNDI()) {
 
-         LOG.infof("Creating destination '%s'.", destinationName);
+            LOG.infof("Creating destination '%s'.", destinationName);
 
-         return (T) ActiveMQJMSClient.createQueue(Settings.getQueueName());
+            return (T) objectStoreManager.getObject(destinationName);
 
-      }
-   }
+        } else {
 
-   @Override
-   public <T> T getConnection(String connectionName) throws JMSException, NamingException {
-      LOG.infof("[%s] Fetching destination '%s'.", threadName, connectionName);
+            LOG.infof("Creating destination '%s'.", destinationName);
 
-      return (T) objectStoreManager.getObject(connectionName);
+            return (T) ActiveMQJMSClient.createQueue(Settings.getQueueName());
 
-   }
+        }
+    }
 
-   @Override
-   public <T> T getDestination(String destinationName) throws JMSException, NamingException {
-      LOG.infof("[%s] Fetching destination '%s'.", Thread.currentThread().getName(), destinationName);
+    @Override
+    public <T> T getConnection(String connectionName) throws JMSException, NamingException {
+        LOG.infof("[%s] Fetching destination '%s'.", threadName, connectionName);
 
-      return (T) objectStoreManager.getObject(destinationName);
-   }
+        return (T) objectStoreManager.getObject(connectionName);
 
-   public String toString(){
-      StringBuilder str = new StringBuilder();
+    }
 
-      str.append("Connection Manager: URL='");
-      str.append(Settings.getConnectUrl());
-      str.append(" connection type='");
-      str.append("'.");
+    @Override
+    public <T> T getDestination(String destinationName) throws JMSException, NamingException {
+        LOG.infof("[%s] Fetching destination '%s'.", Thread.currentThread().getName(), destinationName);
 
-      return str.toString();
-   }
+        return (T) objectStoreManager.getObject(destinationName);
+    }
 
-   private HashMap<String,Object> parseUrl(String url){
-      HashMap<String,Object> map = new HashMap<>();
-      String host = null;
-      String port = null;
-      String[] tokens = url.split(":");
+    public String toString() {
+        StringBuilder str = new StringBuilder();
 
-      for (int i = 0; i < tokens.length;i++){
+        str.append("Connection Manager: URL='");
+        str.append(Settings.getConnectUrl());
+        str.append(" connection type='");
+        str.append("'.");
 
-         if ( i == 1){
-            host = tokens[i].substring(2);
-         }
-         if ( i == 2){
+        return str.toString();
+    }
 
-            port = tokens[i].substring(0);
-         }
-      }
+    private HashMap<String, Object> parseUrl(String url) {
+        HashMap<String, Object> map = new HashMap<>();
+        String host = null;
+        String port = null;
+        String[] tokens = url.split(":");
 
-      map.put("host",host);
+        for (int i = 0; i < tokens.length; i++) {
 
-      map.put("port",port);
+            if (i == 1) {
+                host = tokens[i].substring(2);
+            }
+            if (i == 2) {
 
-      return map;
+                port = tokens[i].substring(0);
+            }
+        }
 
-   }
+        map.put("host", host);
+
+        map.put("port", port);
+
+        return map;
+
+    }
 }

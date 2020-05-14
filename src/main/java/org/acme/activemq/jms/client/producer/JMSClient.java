@@ -24,7 +24,7 @@ import org.acme.activemq.jms.client.utils.JMSClientException;
 
 public interface JMSClient extends Runnable {
 
-   public void init()  throws Exception;
+   public boolean init()  throws Exception;
 
    public void cleanUp() throws JMSException;
 

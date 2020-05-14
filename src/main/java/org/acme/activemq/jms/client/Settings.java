@@ -40,6 +40,8 @@ public class Settings {
 
    private static final String QUEUE_NAME_PROP = "queue.name";
 
+   private static final String QUEUE_AUTO_CREATE_PROP = "queue.auto-create";
+
    private static final String CONNECTION_NAME_PROP = "connection.name";
 
    private static final String MESSAGE_COUNT_PROP = "message.count";
@@ -251,7 +253,7 @@ public class Settings {
       return Long.parseLong(System.getProperty(MESSAGE_SCHEDULED_PROP, "0"));
    }
 
-   public static boolean useJndi(){
+   public static boolean getUseJNDI(){
 
       return Boolean.parseBoolean(System.getProperty(USE_JNDI,"true"));
 
@@ -263,6 +265,11 @@ public class Settings {
 
    public static long getReconnectDelay(){
       return Long.parseLong(System.getProperty(RECONNECT_DELAY,"10000"));
+   }
+
+   public static boolean getQueueAutoCreate(){
+
+      return Boolean.parseBoolean(System.getProperty(QUEUE_AUTO_CREATE_PROP,"false"));
    }
 
 }

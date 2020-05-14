@@ -70,6 +70,7 @@ public class CountDownLatchWrapper {
             latch.countDown();
 
          }
+
       } finally {
 
          LOG.warnf("[%s] Should never happen. Shutting down the latch.",Thread.currentThread().getName());
