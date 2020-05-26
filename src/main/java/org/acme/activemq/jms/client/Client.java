@@ -93,11 +93,9 @@ public class Client {
 
       } catch (Exception exception){
 
-         LOG.errorf(exception,"Unknown error, shutting down.");
+         LOG.errorf(exception,"");
 
          cLatch.shutDown();
-
-         System.exit(-1);
 
       }
 

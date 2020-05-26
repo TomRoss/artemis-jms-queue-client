@@ -263,6 +263,7 @@ public class JMSClientImpl implements JMSClient {
                     totalTime = finishTime - startTime;
 
                     if (clientDone) {
+
                         break;
                     }
 
@@ -458,7 +459,7 @@ public class JMSClientImpl implements JMSClient {
 
             queueSender = queueSession.createSender(queue);
 
-            LOG.infof("[%s] Queue receiver for queue '%s' created.", threadName, queueSender.getQueue().getQueueName());
+            LOG.infof("[%s] Queue sender for queue '%s' created.", threadName, queueSender.getQueue().getQueueName());
 
             return true;
 

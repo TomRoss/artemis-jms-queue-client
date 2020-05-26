@@ -73,7 +73,7 @@ public class Main {
       LOG.info("\tmessage.size - message size in KB");
       LOG.info("\tclient.count - number of JMS clients. [1]");
       LOG.info("\tsession.transacted - is the JMS session transacted. [false]");
-      LOG.info("\tbatch.size - transaction batch size. [1]");
+      LOG.info("\ttx.batch.size - transaction batch size. [1]");
       LOG.info("\tlog.batch.size - logging batch size. [10]");
       LOG.info("\tdup.detect - duplicate message detection. [false]");
       LOG.info("\treconnect.attempts - how many times to try to reconnect [15]");
