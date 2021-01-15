@@ -55,7 +55,6 @@ public class Main {
       LOG.info("************************************");
       LOG.info("mvn exec:java -D[property=value]");
       LOG.info("List of properties with [default values]:");
-      LOG.info("\tuse.jndi - use JNDI for names lookups.");
       LOG.info("\tconnection.url - message connect string. [tcp://localhost:5445]");
       LOG.info("\tusername - user name [quickuser]");
       LOG.info("\tpassword - user password [quick123+]");

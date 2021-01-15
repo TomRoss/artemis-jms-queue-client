@@ -33,9 +33,9 @@ public class ObjectStoreManager {
    private Hashtable<String,String> env = null;
 
 
-   public ObjectStoreManager(String url, String username, String password){
+   public ObjectStoreManager(){
 
-      /*env = new Hashtable<String,String>();
+      /* env = new Hashtable<String,String>();
 
       env.put(Context.INITIAL_CONTEXT_FACTORY, ObjectStoreManager.INITIAL_CONTEXT_FACTORY);
       env.put(Context.PROVIDER_URL, url);

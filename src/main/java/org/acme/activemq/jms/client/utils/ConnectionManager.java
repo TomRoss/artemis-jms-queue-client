@@ -10,7 +10,7 @@ public interface ConnectionManager {
 
    public <T> T createDestination(String destinationName) throws Exception;
 
-   public <T> T getConnection() throws JMSException;
+   //public <T> T getConnection() throws JMSException;
 
    public <T> T getConnection(String connectionName) throws JMSException, NamingException;
 

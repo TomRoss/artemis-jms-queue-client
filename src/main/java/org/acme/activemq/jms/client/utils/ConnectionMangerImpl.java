@@ -44,43 +44,20 @@ public class ConnectionMangerImpl implements ConnectionManager {
     private String threadName = Thread.currentThread().getName();
 
 
-    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager, boolean useJndi) {
+    public ConnectionMangerImpl(ObjectStoreManager objectStoreManager) {
 
         this.objectStoreManager = objectStoreManager;
 
-        this.useJndi = useJndi;
-
-        if (!useJndi) {
-
-            transportConfiguration = new TransportConfiguration(NettyConnectorFactory.class.getName(), parseUrl(Settings.getConnectUrl()));
-
-        }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Connection manager created.");
         }
     }
 
+    /* public <T> T createConnection() throws Exception {
 
-    public <T> T getConnection() throws JMSException {
-
-        LOG.debugf("[%s] Creating connection with URL [%s]",threadName,Settings.getConnectUrl());
-
-        Object obj = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF,transportConfiguration);
-
-        LOG.debugf("[%s] Connection [%s] created",threadName,Settings.getConnectUrl());
-
-        return (T) obj;
-    }
-
-    /*public <T> T createConnection() throws Exception {
-
-<<<<<<< Updated upstream
-=======
          amqCF.setBlockOnDurableSend(false);
          amqCF.setBrokerURL("(tcp://jess:61616,tcp://aza:61616)?QUEUE_CF&ha=true&reconnectAttempts=-1");
          qcf = (QueueConnectionFactory) amqCF;
-      }
->>>>>>> Stashed changes
 
         amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
 
@@ -96,19 +73,13 @@ public class ConnectionMangerImpl implements ConnectionManager {
 
     public <T> T createDestination(String destinationName) throws NamingException, JMSException {
 
-        if (Settings.getUseJNDI()) {
+
 
             LOG.infof("Creating destination '%s'.", destinationName);
 
             return (T) objectStoreManager.getObject(destinationName);
 
-        } else {
 
-            LOG.infof("Creating destination '%s'.", destinationName);
-
-            return (T) ActiveMQJMSClient.createQueue(Settings.getQueueName());
-
-        }
     }
 
     @Override
@@ -130,7 +101,7 @@ public class ConnectionMangerImpl implements ConnectionManager {
         StringBuilder str = new StringBuilder();
 
         str.append("Connection Manager: URL='");
-        str.append(Settings.getConnectUrl());
+        //str.append(Settings.getConnectUrl());
         str.append(" connection type='");
         str.append("'.");
 

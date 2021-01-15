@@ -34,10 +34,6 @@ public class Settings {
 
    private static final String RECEIVE_TIME_OUT_PROP = "receive.timeout";
 
-   private static final String CONNECT_URL = "connection.url";
-
-   private static final String USE_JNDI = "use.jndi";
-
    private static final String QUEUE_NAME_PROP = "queue.name";
 
    private static final String QUEUE_AUTO_CREATE_PROP = "queue.auto-create";
@@ -229,11 +225,6 @@ public class Settings {
 
    }
 
-   public static String getConnectUrl(){
-
-      return System.getProperty(Settings.CONNECT_URL, "tcp://localhost:61616");
-   }
-
    public static String getMessageSelector(){
 
       return System.getProperty(Settings.MESSAGE_SELECTOR_PROP);
@@ -253,12 +244,6 @@ public class Settings {
    public static long getMessageScheduledDelay(){
 
       return Long.parseLong(System.getProperty(MESSAGE_SCHEDULED_PROP, "0"));
-   }
-
-   public static boolean getUseJNDI(){
-
-      return Boolean.parseBoolean(System.getProperty(USE_JNDI,"true"));
-
    }
 
    public static int getReconnectAttempts(){

@@ -120,7 +120,6 @@ public class JMSClientImpl implements JMSClient {
         reconnectAttempts = Settings.getReconnectAttempts();
         reconnectDelay = Settings.getReconnectDelay();
         queueAutoCreate = Settings.getQueueAutoCreate();
-        useJNDI = Settings.getUseJNDI();
         reinitialiseFactory = Settings.getReInitiliseFactory();
         threadName = Thread.currentThread().getName();
 
@@ -136,7 +135,7 @@ public class JMSClientImpl implements JMSClient {
 
         this.objectStoreManager = objectStoreManager;
 
-        this.connectionManager = new ConnectionMangerImpl(objectStoreManager, Settings.getUseJNDI());
+        this.connectionManager = new ConnectionMangerImpl(objectStoreManager);
 
         this.results = results;
 
@@ -435,17 +434,13 @@ public class JMSClientImpl implements JMSClient {
 
             LOG.infof("[%s] Creating JMS resources", threadName);
 
-            if (Settings.getUseJNDI() && firsTime) {
+            if (firsTime) {
 
                 qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
 
                 if (!Settings.getReInitiliseFactory()){
                     firsTime = false;
                 }
-
-            } else if (!Settings.getUseJNDI()) {
-
-                qcf  = connectionManager.getConnection();
 
             }
 

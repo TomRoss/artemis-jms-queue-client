@@ -43,7 +43,7 @@ public class Client {
    {
 
       executor = Executors.newFixedThreadPool(Settings.getClientCnt());
-      objectStoreManager = new ObjectStoreManager(Settings.getConnectUrl(), Settings.getUserName(), Settings.getPassword());
+      objectStoreManager = new ObjectStoreManager( );
       cLatch = new CountDownLatchWrapper(Settings.getClientCnt());
 
       LOG.debug("Client created.");
@@ -58,7 +58,7 @@ public class Client {
 
          for (int i = 0; i < clientCnt; i++) {
 
-            queueProducer = new JMSClientImpl(objectStoreManager, cLatch,results);
+            queueProducer = new JMSClient(objectStoreManager, cLatch,results);
 
             if (queueProducer.init()) {
 
