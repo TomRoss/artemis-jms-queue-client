@@ -58,7 +58,7 @@ public class Client {
 
          for (int i = 0; i < clientCnt; i++) {
 
-            queueProducer = new JMSClient(objectStoreManager, cLatch,results);
+            queueProducer = new JMSClientImpl(objectStoreManager, cLatch,results);
 
             if (queueProducer.init()) {
 
