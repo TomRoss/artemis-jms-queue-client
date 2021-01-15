@@ -97,6 +97,8 @@ public class JMSClientImpl implements JMSClient {
     private TextMessage textMessage = null;
     private final ExceptionListener exceptionListener = new ConnectionErrorHandle();
 
+    private boolean firsTime = true;
+    private boolean reinitialiseFactory = false;
 
     public JMSClientImpl() {
 
@@ -119,6 +121,7 @@ public class JMSClientImpl implements JMSClient {
         reconnectDelay = Settings.getReconnectDelay();
         queueAutoCreate = Settings.getQueueAutoCreate();
         useJNDI = Settings.getUseJNDI();
+        reinitialiseFactory = Settings.getReInitiliseFactory();
         threadName = Thread.currentThread().getName();
 
         result = new Result();
@@ -222,12 +225,26 @@ public class JMSClientImpl implements JMSClient {
 
                         }
 
+                        if (i < 30){
+
+                            textMessage.setStringProperty("queue_command","BA");
+
+                        } else if ( i > 30 && i < 60){
+
+                            textMessage.setStringProperty("queue_command","BB");
+
+                        } else if ( i > 60){
+
+                            textMessage.setStringProperty("queue_command","BC");
+                        }
+
+
                         if (dupDetect) {
 
                             //textMessage.setStringProperty(org.apache.activemq.artemis.api.core.Message.HDR_DUPLICATE_DETECTION_ID.toString(),Long.toString(System.currentTimeMillis()));
 
                         }
-
+                        
                         queueSender.send(textMessage, DeliveryMode.PERSISTENT, messagePriority, messageExpiration);
 
                         if (this.sessionTransacted && ((i % this.txBatchSize) == 0)) {
@@ -238,7 +255,7 @@ public class JMSClientImpl implements JMSClient {
 
                         if ((i % logBatchSize) == 0) {
 
-                            LOG.infof("[%s] Message '" + i + "' sent.", threadName);
+                            LOG.infof("[%s] Message '%d' sent.", threadName,i);
 
                         }
 
@@ -418,11 +435,15 @@ public class JMSClientImpl implements JMSClient {
 
             LOG.infof("[%s] Creating JMS resources", threadName);
 
-            if (Settings.getUseJNDI()) {
+            if (Settings.getUseJNDI() && firsTime) {
 
                 qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
 
-            } else {
+                if (!Settings.getReInitiliseFactory()){
+                    firsTime = false;
+                }
+
+            } else if (!Settings.getUseJNDI()) {
 
                 qcf  = connectionManager.getConnection();
 
@@ -431,8 +452,6 @@ public class JMSClientImpl implements JMSClient {
             queueConnection = qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
 
             queueConnection.setExceptionListener(exceptionListener);
-
-            queueConnection.start();
 
             LOG.infof("[%s] Connection started. Starting receiving messages.", threadName);
 
@@ -521,9 +540,9 @@ public class JMSClientImpl implements JMSClient {
 
 
         } finally {
-            queueSender = null;
-            queueSession = null;
-            queueConnection = null;
+            //queueSender = null;
+            //queueSession = null;
+            //queueConnection = null;
         }
     }
 

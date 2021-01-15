@@ -82,6 +82,8 @@ public class Settings {
 
    private static final String RECONNECT_DELAY = "reconnect.delay";
 
+   private static final String REINITIALISE_FACTORY = "reinitialise.factory";
+
    private static String localHostName = null;
 
    public static int exitStatus = 0;
@@ -272,4 +274,7 @@ public class Settings {
       return Boolean.parseBoolean(System.getProperty(QUEUE_AUTO_CREATE_PROP,"false"));
    }
 
+   public static boolean getReInitiliseFactory(){
+      return Boolean.parseBoolean(System.getProperty(REINITIALISE_FACTORY,"false"));
+   }
 }

@@ -78,6 +78,7 @@ public class Main {
       LOG.info("\tdup.detect - duplicate message detection. [false]");
       LOG.info("\treconnect.attempts - how many times to try to reconnect [15]");
       LOG.info("\treconnect.delay - how long to wait between reconnection attempts [10 seconds]");
+      LOG.info("\treinitialise.factory - create a brand new connection factory [false]");
 
       LOG.info("************************************");
    }

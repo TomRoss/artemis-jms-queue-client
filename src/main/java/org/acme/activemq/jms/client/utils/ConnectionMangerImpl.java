@@ -74,6 +74,13 @@ public class ConnectionMangerImpl implements ConnectionManager {
 
     /*public <T> T createConnection() throws Exception {
 
+<<<<<<< Updated upstream
+=======
+         amqCF.setBlockOnDurableSend(false);
+         amqCF.setBrokerURL("(tcp://jess:61616,tcp://aza:61616)?QUEUE_CF&ha=true&reconnectAttempts=-1");
+         qcf = (QueueConnectionFactory) amqCF;
+      }
+>>>>>>> Stashed changes
 
         amqCF = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.QUEUE_CF, transportConfiguration);
 

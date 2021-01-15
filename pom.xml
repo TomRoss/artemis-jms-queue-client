@@ -2,200 +2,232 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-   <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-   <packaging>jar</packaging>
+    <packaging>jar</packaging>
 
-   <groupId>org.activemq.jms.queue.producer</groupId>
-   <artifactId>artemis-jms-queue-producer</artifactId>
-   <version>7.6.0</version>
+    <groupId>org.activemq.jms.queue.producer</groupId>
+    <artifactId>artemis-jms-queue-producer</artifactId>
+    <version>7.8.0</version>
 
-   <properties>
+    <properties>
 
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 
-      <jboss.logging.version>3.3.1.Final-redhat-1</jboss.logging.version>
-      <jboss.log.manager.version>2.0.7.Final-redhat-1</jboss.log.manager.version>
+        <jboss.logging.version>3.3.1.Final-redhat-1</jboss.logging.version>
+        <jboss.log.manager.version>2.0.7.Final-redhat-1</jboss.log.manager.version>
 
-      <artemis.client.version>2.11.0.redhat-00005</artemis.client.version>
+        <artemis.client.version>2.16.0.redhat-00007</artemis.client.version>
 
-      <!-- maven-jar-plugin -->
-      <jar.plugin.version>3.2.0</jar.plugin.version>
-      <sure-fire.plugin.version>2.20.1</sure-fire.plugin.version>
-      <!-- maven-compiler-plugin -->
-      <compiler.pluging.version>3.8.1</compiler.pluging.version>
-      <exec.plugin.version>1.6.0</exec.plugin.version>
+        <!-- maven-jar-plugin -->
+        <jar.plugin.version>3.2.0</jar.plugin.version>
+        <sure-fire.plugin.version>2.20.1</sure-fire.plugin.version>
+        <!-- maven-compiler-plugin -->
+        <compiler.pluging.version>3.8.1</compiler.pluging.version>
+        <exec.plugin.version>1.6.0</exec.plugin.version>
 
-      <maven.compiler.target>1.8</maven.compiler.target>
-      <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
 
-      <!-- artemis-maven-plugin -->
-      <artemis.plugin.version>1.1.0</artemis.plugin.version>
+        <!-- artemis-maven-plugin -->
+        <artemis.plugin.version>1.1.0</artemis.plugin.version>
 
-      <activemq.basedir>${project.basedir}/target</activemq.basedir>
+        <activemq.basedir>${project.basedir}/target</activemq.basedir>
 
-   </properties>
+    </properties>
 
-   <dependencyManagement>
-      <dependencies>
+    <dependencyManagement>
+        <dependencies>
 
-         <dependency>
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>artemis-jms-client</artifactId>
+                <version>${artemis.client.version}</version>
+                <type>jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${jboss.logging.version}</version>
+                <type>jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logmanager</groupId>
+                <artifactId>jboss-logmanager</artifactId>
+                <version>${jboss.log.manager.version}</version>
+                <type>jar</type>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
+
+    <dependencies>
+
+
+        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-jms-client</artifactId>
-            <version>${artemis.client.version}</version>
-         </dependency>
+            <type>jar</type>
+        </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>${jboss.logging.version}</version>
-         </dependency>
+            <type>jar</type>
+        </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>org.jboss.logmanager</groupId>
             <artifactId>jboss-logmanager</artifactId>
-            <version>${jboss.log.manager.version}</version>
             <type>jar</type>
-         </dependency>
+        </dependency>
 
-      </dependencies>
+    </dependencies>
 
-   </dependencyManagement>
+    <build>
 
-   <dependencies>
+        <finalName>${project.artifactId}-${project.version}</finalName>
 
-
-     <dependency>
-         <groupId>org.apache.activemq</groupId>
-         <artifactId>artemis-jms-client</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.logging</groupId>
-         <artifactId>jboss-logging</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>org.jboss.logmanager</groupId>
-         <artifactId>jboss-logmanager</artifactId>
-         <type>jar</type>
-      </dependency>
-
-   </dependencies>
-
-   <build>
-
-      <finalName>${project.artifactId}-${project.version}</finalName>
-
-         <plugins>
+        <plugins>
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-compiler-plugin</artifactId>
-               <version>${compiler.pluging.version}</version>
-               <configuration>
-                  <target>${maven.compiler.target}</target>
-                  <source>${maven.compiler.source}</source>
-               </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.pluging.version}</version>
+                <configuration>
+                    <target>${maven.compiler.target}</target>
+                    <source>${maven.compiler.source}</source>
+                </configuration>
             </plugin>
 
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-jar-plugin</artifactId>
-               <version>${jar.plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${jar.plugin.version}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.acme.activemq.jms.client.Main</mainClass>
+                            <classpathPrefix>dependency-jars/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
 
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-surefire-plugin</artifactId>
-               <version>${sure-fire.plugin.version}</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${sure-fire.plugin.version}</version>
             </plugin>
 
             <plugin>
-               <groupId>org.codehaus.mojo</groupId>
-               <artifactId>exec-maven-plugin</artifactId>
-               <version>${exec.plugin.version}</version>
-               <executions>
-                  <execution>
-                     <goals>
-                        <goal>exec</goal>
-                     </goals>
-                  </execution>
-               </executions>
-               <configuration>
-                  <executable>java</executable>
-                  <workingDirectory>${project.build.directory}/exec-working-directory</workingDirectory>
-                  <mainClass>org.acme.activemq.jms.client.Main</mainClass>
-                  <!-- <systemProperties>
-                      <systemProperty>
-                          <key>java.logging.config.file</key>
-                          <value>./helloworld-jms-logging.properties</value>
-                      </systemProperty>
-                  </systemProperties> -->
-               </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>java</executable>
+                    <workingDirectory>${project.build.directory}/exec-working-directory</workingDirectory>
+                    <mainClass>org.acme.activemq.jms.client.Main</mainClass>
+                    <!-- <systemProperties>
+                        <systemProperty>
+                            <key>java.logging.config.file</key>
+                            <value>./helloworld-jms-logging.properties</value>
+                        </systemProperty>
+                    </systemProperties> -->
+                </configuration>
             </plugin>
 
             <plugin>
-               <groupId>org.apache.activemq</groupId>
-               <artifactId>artemis-maven-plugin</artifactId>
-               <version>2.3.0</version>
-               <executions>
-                  <execution>
-                     <id>create</id>
-                     <goals>
-                        <goal>create</goal>
-                     </goals>
-                     <configuration>
-                        <ignore>true</ignore>
-                        <home>${project.basedir}/target/server</home>
-                     </configuration>
-                  </execution>
-                  <execution>
-                     <id>start</id>
-                     <goals>
-                        <goal>cli</goal>
-                     </goals>
-                     <configuration>
-                        <spawn>true</spawn>
-                        <ignore>true</ignore>
-                        <testURI>tcp://localhost:61616</testURI>
-                        <args>
-                           <param>run</param>
-                        </args>
-                     </configuration>
-                  </execution>
-                  <execution>
-                     <id>runClient</id>
-                     <goals>
-                        <goal>runClient</goal>
-                     </goals>
-                     <configuration>
-                        <clientClass>org.acme.activemq.jms.client.Main</clientClass>
-                     </configuration>
-                  </execution>
-                  <execution>
-                     <id>stop</id>
-                     <goals>
-                        <goal>cli</goal>
-                     </goals>
-                     <configuration>
-                        <ignore>true</ignore>
-                        <args>
-                           <param>stop</param>
-                        </args>
-                     </configuration>
-                  </execution>
-               </executions>
-               <dependencies>
-                  <dependency>
-                     <groupId>org.activemq.jms.queue.producer</groupId>
-                     <artifactId>artemis-jms-queue-producer</artifactId>
-                     <version>${project.version}</version>
-                  </dependency>
-               </dependencies>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>artemis-maven-plugin</artifactId>
+                <version>2.3.0</version>
+                <executions>
+                    <execution>
+                        <id>create</id>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                        <configuration>
+                            <ignore>true</ignore>
+                            <home>${project.basedir}/target/server</home>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>start</id>
+                        <goals>
+                            <goal>cli</goal>
+                        </goals>
+                        <configuration>
+                            <spawn>true</spawn>
+                            <ignore>true</ignore>
+                            <testURI>tcp://localhost:61616</testURI>
+                            <args>
+                                <param>run</param>
+                            </args>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>runClient</id>
+                        <goals>
+                            <goal>runClient</goal>
+                        </goals>
+                        <configuration>
+                            <clientClass>org.acme.activemq.jms.client.Main</clientClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <goals>
+                            <goal>cli</goal>
+                        </goals>
+                        <configuration>
+                            <ignore>true</ignore>
+                            <args>
+                                <param>stop</param>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.activemq.jms.queue.producer</groupId>
+                        <artifactId>artemis-jms-queue-producer</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
-         </plugins>
 
-   </build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/dependency-jars/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
 
 </project>
