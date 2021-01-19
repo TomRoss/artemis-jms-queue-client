@@ -35,12 +35,13 @@ public class ObjectStoreManager {
 
    public ObjectStoreManager(){
 
-      /* env = new Hashtable<String,String>();
-
+      /**
+      env = new Hashtable<String,String>();
       env.put(Context.INITIAL_CONTEXT_FACTORY, ObjectStoreManager.INITIAL_CONTEXT_FACTORY);
       env.put(Context.PROVIDER_URL, url);
       env.put(Context.SECURITY_PRINCIPAL, username);
-      env.put(Context.SECURITY_CREDENTIALS, password); */
+      env.put(Context.SECURITY_CREDENTIALS, password);
+      */
 
    }
 

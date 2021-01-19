@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.acme.activemq.jms.client.producer;
+package org.acme.activemq.jms.client;
 
 import javax.jms.JMSException;
 import javax.naming.NamingException;
 
 import org.acme.activemq.jms.client.utils.JMSClientException;
 
-public interface JMSClient extends Runnable {
+public interface ArtemisClient extends Runnable {
 
    public boolean init()  throws Exception;
 
@@ -32,8 +32,8 @@ public interface JMSClient extends Runnable {
 
    //public void printResults(String threadName, long totalTime ,long messageCount);
 
-   public String sessionTypeToString(int type);
+   //public String sessionTypeToString(int type);
 
-   public String getMessagePayLoad(int size);
+
 
 }

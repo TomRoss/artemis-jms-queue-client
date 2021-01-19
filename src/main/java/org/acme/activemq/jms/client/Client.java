@@ -22,9 +22,8 @@ import javax.naming.NamingException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.acme.activemq.jms.client.producer.JMSClient;
+import org.acme.activemq.jms.client.producer.ArtemisProducerImpl;
 import org.acme.activemq.jms.client.utils.CountDownLatchWrapper;
-import org.acme.activemq.jms.client.producer.JMSClientImpl;
 import org.acme.activemq.jms.client.utils.JMSClientException;
 import org.acme.activemq.jms.client.utils.ObjectStoreManager;
 
@@ -34,10 +33,11 @@ import org.jboss.logging.Logger;
 public class Client {
    private static final Logger LOG = Logger.getLogger(Client.class);
    private ExecutorService executor = null;
-   private JMSClient queueProducer = null;
+   private ArtemisClient queueClient = null;
    private CountDownLatchWrapper cLatch = null;
    private ObjectStoreManager objectStoreManager = null;
    private Results results = new Results();
+   private  String clientType = null;
 
    public Client()
    {
@@ -45,6 +45,13 @@ public class Client {
       executor = Executors.newFixedThreadPool(Settings.getClientCnt());
       objectStoreManager = new ObjectStoreManager( );
       cLatch = new CountDownLatchWrapper(Settings.getClientCnt());
+
+      if (!isValidClientType()){
+
+         LOG.errorf("Invalid client type. Please specify client type as -Dclient.type=producer|consumer");
+
+         System.exit(-1);
+      }
 
       LOG.debug("Client created.");
 
@@ -54,15 +61,26 @@ public class Client {
 
       LOG.info("<<< Starting client threads >>>");
 
+      clientType = Settings.getClientType();
+
       try {
 
          for (int i = 0; i < clientCnt; i++) {
 
-            queueProducer = new JMSClientImpl(objectStoreManager, cLatch,results);
+            if ( clientType.equals("producer")){
 
-            if (queueProducer.init()) {
+               queueClient = new ArtemisProducerImpl(objectStoreManager, cLatch,results);
 
-               executor.execute(queueProducer);
+            } else {
+
+               queueClient = new ArtemisProducerImpl(objectStoreManager, cLatch,results);
+
+            }
+
+
+            if (queueClient.init()) {
+
+               executor.execute(queueClient);
 
             } else {
 
@@ -136,6 +154,24 @@ public class Client {
       LOG.info(" === Clients finished === ");
 
       results.printResults();
+
+   }
+
+   boolean isValidClientType(){
+
+      String t = Settings.getClientType();
+
+      if (Settings.getClientType() != null && Settings.getClientType().equals("producer")){
+
+         return true;
+
+      } else if ( Settings.getClientType() != null && Settings.getClientType().equals("consumer")) {
+
+         return true;
+
+      }
+
+      return false;
 
    }
 }

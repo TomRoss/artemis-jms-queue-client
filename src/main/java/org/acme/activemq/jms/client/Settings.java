@@ -32,6 +32,8 @@ public class Settings {
 
    private static Settings settings = null;
 
+   private static final String CLIENT_TYPE = "client.type";
+
    private static final String RECEIVE_TIME_OUT_PROP = "receive.timeout";
 
    private static final String QUEUE_NAME_PROP = "queue.name";
@@ -79,6 +81,10 @@ public class Settings {
    private static final String RECONNECT_DELAY = "reconnect.delay";
 
    private static final String REINITIALISE_FACTORY = "reinitialise.factory";
+
+   private static final String LOG_MESSAGE_TEXT = "log.message.text";
+
+   private static final String IGNORE_REMOTE_COUNT = "ignore.remote.count";
 
    private static String localHostName = null;
 
@@ -261,5 +267,23 @@ public class Settings {
 
    public static boolean getReInitiliseFactory(){
       return Boolean.parseBoolean(System.getProperty(REINITIALISE_FACTORY,"false"));
+   }
+
+   public static String getClientType(){
+
+      return System.getProperty(CLIENT_TYPE,null);
+
+   }
+
+   public static boolean getLogMessageText(){
+
+      return Boolean.parseBoolean(System.getProperty(LOG_MESSAGE_TEXT,"false"));
+
+   }
+
+   public static boolean getIgnoreRemoteCount(){
+
+      return Boolean.parseBoolean(System.getProperty(IGNORE_REMOTE_COUNT,"true"));
+
    }
 }

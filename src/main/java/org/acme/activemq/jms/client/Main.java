@@ -55,29 +55,35 @@ public class Main {
       LOG.info("************************************");
       LOG.info("mvn exec:java -D[property=value]");
       LOG.info("List of properties with [default values]:");
-      LOG.info("\tconnection.url - message connect string. [tcp://localhost:5445]");
-      LOG.info("\tusername - user name [quickuser]");
-      LOG.info("\tpassword - user password [quick123+]");
+      LOG.info("Common");
+      LOG.info("\tclient.type - JMS producer or consumer [required]");
+      LOG.info("\tusername - user name [guest]");
+      LOG.info("\tpassword - user password [null]");
       LOG.info("\tconnection.name - connection factory name. [ConnectionFactory]");
       LOG.info("\tqueue.name - queue name. [jms/queue/testQueue]");
       LOG.info("\tqueue.auto-create - auto create queue [false]");
       LOG.info("\tmessage.count - number of message to send. [1]");
-      LOG.info("\tmessage.send.delay - delay between each message send [0] (in milliseconds)");
-      LOG.info("\tmessage.consume.delay - delay between message consumption [0] (in milliseconds)");
-      LOG.info("\tmessage.scheduled.delay - scheduled message delay (in milliseconds)");
-      LOG.info("\tmessage.throw.exception - throw exception when consuming message [false]");
-      LOG.info("\tmessage.expire - expire message after x millisends [0] (in milliseconds)");
-      LOG.info("\tmessage.group - sets the value of JMSXGroupID [no group]");
-      LOG.info("\tmessage.priority - message priority [Message.DEFALUT_PRIORITY]");
-      LOG.info("\tmessage.size - message size in KB");
       LOG.info("\tclient.count - number of JMS clients. [1]");
       LOG.info("\tsession.transacted - is the JMS session transacted. [false]");
       LOG.info("\ttx.batch.size - transaction batch size. [1]");
       LOG.info("\tlog.batch.size - logging batch size. [10]");
-      LOG.info("\tdup.detect - duplicate message detection. [false]");
       LOG.info("\treconnect.attempts - how many times to try to reconnect [15]");
       LOG.info("\treconnect.delay - how long to wait between reconnection attempts [10 seconds]");
       LOG.info("\treinitialise.factory - create a brand new connection factory [false]");
+
+      LOG.info("\tProducer only properties");
+      LOG.info("\tmessage.priority - message priority [Message.DEFALUT_PRIORITY]");
+      LOG.info("\tmessage.send.delay - delay between each message send [0] (in milliseconds)");
+      LOG.info("\tmessage.group - sets the value of JMSXGroupID [no group]");
+      LOG.info("\tmessage.size - message size in KB");
+      LOG.info("\tmessage.scheduled.delay - scheduled message delay (in milliseconds)");
+      LOG.info("\tmessage.throw.exception - throw exception when consuming message [false]");
+      LOG.info("\tmessage.expire - expire message after x milliseconds [0] (in milliseconds)");
+
+      LOG.info("\tConsumer only properties");
+      LOG.info("\tmessage.consume.delay - delay between message consumption [0] (in milliseconds)");
+      LOG.info("\tdup.detect - duplicate message detection. [false]");
+
 
       LOG.info("************************************");
    }

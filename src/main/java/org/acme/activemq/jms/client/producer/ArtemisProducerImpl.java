@@ -33,6 +33,7 @@ import javax.jms.QueueSession;
 import javax.naming.NamingException;
 
 
+import org.acme.activemq.jms.client.ArtemisProducer;
 import org.acme.activemq.jms.client.Settings;
 import org.acme.activemq.jms.client.utils.Result;
 import org.acme.activemq.jms.client.utils.Results;
@@ -46,8 +47,8 @@ import org.acme.activemq.jms.client.utils.Helper;
 
 import org.jboss.logging.Logger;
 
-public class JMSClientImpl implements JMSClient {
-    private static final Logger LOG = Logger.getLogger(JMSClientImpl.class);
+public class ArtemisProducerImpl implements ArtemisProducer {
+    private static final Logger LOG = Logger.getLogger(ArtemisProducerImpl.class);
     private static final String messageText = "This is text message '%d' out of '%d'. Sent from host '%s'.";
 
     private CountDownLatchWrapper latch = null;
@@ -75,7 +76,7 @@ public class JMSClientImpl implements JMSClient {
     private boolean dupDetect = false;
     private boolean clientDone = false;
     private boolean queueAutoCreate = false;
-    private boolean useJNDI = true;
+
 
     private String messageGroupName = null;
     private String hostName = null;
@@ -100,7 +101,7 @@ public class JMSClientImpl implements JMSClient {
     private boolean firsTime = true;
     private boolean reinitialiseFactory = false;
 
-    public JMSClientImpl() {
+    public ArtemisProducerImpl() {
 
         throwException = Settings.getMessageThrowException();
         messageGroupName = Settings.getMessageGroup();
@@ -127,7 +128,7 @@ public class JMSClientImpl implements JMSClient {
 
     }
 
-    public JMSClientImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch, Results results) {
+    public ArtemisProducerImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch, Results results) {
 
         this();
 
@@ -139,7 +140,7 @@ public class JMSClientImpl implements JMSClient {
 
         this.results = results;
 
-        LOG.debug("JMSClient created.");
+        LOG.debug("ArtemisClient created.");
 
     }
 
@@ -337,23 +338,6 @@ public class JMSClientImpl implements JMSClient {
     }
 
 
-    public String sessionTypeToString(int type) {
-
-        switch (type) {
-            case Session.AUTO_ACKNOWLEDGE:
-                return "Auto-Acknowledge";
-            case Session.CLIENT_ACKNOWLEDGE:
-                return "Client-Acknowledge";
-            case Session.DUPS_OK_ACKNOWLEDGE:
-                return "Dups-OK_Acknowledge";
-            case Session.SESSION_TRANSACTED:
-                return "Session-Transacted";
-            default:
-                return "Unknown";
-        }
-    }
-
-
     public void cleanUp() throws JMSException {
 
         if (LOG.isInfoEnabled()) {
@@ -459,17 +443,11 @@ public class JMSClientImpl implements JMSClient {
                 queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
             }
 
-            LOG.infof("[%s] Created queue session '%s'.", threadName, this.sessionTypeToString(queueSession.getAcknowledgeMode()));
+            LOG.infof("[%s] Created queue session '%s'.", threadName, Helper.sessionTypeToString(queueSession.getAcknowledgeMode()));
 
-            if (useJNDI) {
 
-                queue = connectionManager.getDestination(this.queueName);
 
-            } else {
-
-                queue = queueSession.createQueue(Helper.getQueueName(queueName));
-
-            }
+            queue = connectionManager.getDestination(this.queueName);
 
             queueSender = queueSession.createSender(queue);
 
@@ -542,7 +520,7 @@ public class JMSClientImpl implements JMSClient {
     }
 
     class ConnectionErrorHandle implements ExceptionListener {
-        private Logger LOG = Logger.getLogger(JMSClientImpl.ConnectionErrorHandle.class);
+        private Logger LOG = Logger.getLogger(ArtemisProducerImpl.ConnectionErrorHandle.class);
 
         @Override
         public void onException(JMSException exception) {
