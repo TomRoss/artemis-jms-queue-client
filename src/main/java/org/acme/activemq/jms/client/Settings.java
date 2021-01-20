@@ -201,7 +201,7 @@ public class Settings {
 
    public static long getReceiveTimeout(){
 
-      return Long.parseLong(System.getProperty(Settings.RECEIVE_TIME_OUT_PROP, "30000"));
+      return Long.parseLong(System.getProperty(Settings.RECEIVE_TIME_OUT_PROP, "10000"));
 
    }
 

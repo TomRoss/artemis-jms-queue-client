@@ -174,11 +174,10 @@ public class ArtemisProducerImpl implements ArtemisProducer {
         int reconn = 0;
 
         try {
-
-            while (reconn <= reconnectAttempts) {
+            do{
 
                 try {
-                    queueSender = queueSession.createSender(queue);
+                    //queueSender = queueSession.createSender(queue);
 
                     textMessage = queueSession.createTextMessage();
 
@@ -303,7 +302,7 @@ public class ArtemisProducerImpl implements ArtemisProducer {
                     reconn++;
 
                 }
-            } // end of while reconnect loop
+            } while (reconn <= reconnectAttempts);
 
         } finally {
 
@@ -317,7 +316,7 @@ public class ArtemisProducerImpl implements ArtemisProducer {
 
             } catch (JMSException jmsEx) {
 
-                LOG.errorf(jmsEx, "[%s] Got JMS Exception - ", threadName);
+                LOG.errorf(jmsEx, "[%s] Got JMS Exception while cleaning up JMS resources - ", threadName);
 
             }
         }

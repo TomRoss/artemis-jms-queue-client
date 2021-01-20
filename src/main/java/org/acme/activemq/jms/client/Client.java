@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.acme.activemq.jms.client.producer.ArtemisProducerImpl;
+import org.acme.activemq.jms.client.consumer.ArtemisConsumerImpl;
 import org.acme.activemq.jms.client.utils.CountDownLatchWrapper;
 import org.acme.activemq.jms.client.utils.JMSClientException;
 import org.acme.activemq.jms.client.utils.ObjectStoreManager;
@@ -73,7 +74,7 @@ public class Client {
 
             } else {
 
-               queueClient = new ArtemisProducerImpl(objectStoreManager, cLatch,results);
+               queueClient = new ArtemisConsumerImpl(objectStoreManager, cLatch,results);
 
             }
 

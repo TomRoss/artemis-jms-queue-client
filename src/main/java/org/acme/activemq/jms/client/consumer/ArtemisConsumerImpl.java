@@ -54,6 +54,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     private String hostName = null;
     private String queueName = null;
     private String threadName = null;
+    private int reconnectAttempts = 0;
 
 
     // JMS section
@@ -88,6 +89,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
         ignoreRemoteMessageCount = Settings.getIgnoreRemoteCount();
 
         threadName = Thread.currentThread().getName();
+        reconnectAttempts = Settings.getReconnectAttempts();
 
         result = new Result();
 
@@ -117,11 +119,25 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     @Override
     public boolean init() throws  Exception {
 
-        queueConnection = connectionManager.getConnection(Settings.getConnectionFactoryName());
+        int i = 1;
+        do {
 
-        queue = connectionManager.createDestination(this.queueName);
+            if (createJMSObjects()){
 
-        return true;
+                return true;
+
+            } else {
+
+                LOG.warnf("[%s] Failed to connect, retrying %d time. Total retry attempts %d, reconnect delay %d milliseconds",threadName,i,Settings.getReconnectAttempts(),Settings.getReconnectDelay());
+
+                Helper.doDelay(Settings.getReconnectDelay());
+
+            }
+
+            i++;
+        } while( i <= reconnectAttempts);
+
+        return false;
     }
 
     @Override
@@ -162,167 +178,106 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
         LOG.infof("[%s] <<< Starting consumer thread >>>",threadName);
 
+        int reconn = 0;
+
         try {
 
-            if (this.sessionTransacted){
+            do {
 
-                queueSession = queueConnection.createQueueSession(true,Session.SESSION_TRANSACTED);
+                try {
 
-            } else {
+                    queueConnection.start();
 
-                queueSession = queueConnection.createQueueSession(false,Session.AUTO_ACKNOWLEDGE);
-            }
+                    LOG.infof("[%s] Connection started. Starting receiving messages.", threadName);
 
-            LOG.infof("[%s] Created queue session '%s'.",threadName,this.sessionTypeToString(queueSession.getAcknowledgeMode()) );
+                    while (true) {
 
-            queueReceiver = queueSession.createReceiver(queue);
+                        message = queueReceiver.receive(receiveTimeout);
 
-            LOG.infof("[%s] Queue receiver for queue '%s' created.",threadName,queueReceiver.getQueue().getQueueName());
+                        if (LOG.isTraceEnabled()) {
 
-            queueConnection.start();
+                            LOG.tracef("Recieved message {%s}.", message.toString());
+                        }
 
-            LOG.infof("[%s] Connection started. Starting receiving messages.",threadName);
+                        if (startTime == 0) {
+                            // first message received get current time
+                            startTime = System.currentTimeMillis();
+                        }
 
-            while (true){
+                        if (message != null && message instanceof TextMessage) {
 
-                message = queueReceiver.receive(receiveTimeout);
+                            textMessage = (TextMessage) message;
 
-                if (LOG.isTraceEnabled()){
+                            if (sessionTransacted && ((i % txBatchSize) == 0)) {
 
-                    LOG.tracef("Recieved message {%s}.",message.toString());
-                }
+                                    queueSession.commit();
 
-                if ( startTime == 0){
-                    // first message received get current time
-                    startTime = System.currentTimeMillis();
-                }
+                            }
 
-                if (message != null && message instanceof TextMessage){
+                            if ((i % logBatchSize) == 0) {
 
-                    this.duplicates.addMessage(message.getJMSMessageID());
+                                if (LOG.isInfoEnabled()) {
 
-                    remoteMessageCount = message.getIntProperty(JMSMessageProperties.TOTAL_MESSAGE_COUNT);
+                                    LOG.infof("[%s] Message '%d' consumed.", threadName, messagesReceivedCnt);
 
-                    if (!ignoreRemoteMessageCount){
-                        expectedMessagesCount = remoteMessageCount;
-                    } else {
-                        expectedMessagesCount = localMessageCount;
-                    }
+                                    if (logMessageText) {
 
-                    throwException = message.getBooleanProperty(JMSMessageProperties.MESSAGE_THROW_EXCEPTION);
+                                        LOG.infof("[%s] Text - %s", threadName, textMessage.getText());
 
-                    long delay = message.getLongProperty(JMSMessageProperties.MESSAGE_CONSUMER_DELAY);
+                                    }
 
-                    if (messageConsumerDelay == -1) {
+                                } else if (LOG.isTraceEnabled()) {
 
-                        messageConsumerDelay = delay;
+                                    if (isLargeMessage(message)) {
 
-                    }
+                                        LOG.tracef("[%s] Message %d consumed. Message size %d", threadName, messagesReceivedCnt, getBodySize(message));
 
-                    messageUniqueValue = message.getLongProperty(JMSMessageProperties.UNIQUE_VALUE);
+                                    } else {
 
-                    messageGroupName = message.getStringProperty(JMSMessageProperties.JMSX_GROUP_ID);
+                                        LOG.tracef("[%s] Message '%d' consumed. Message text '%s'", threadName, messagesReceivedCnt, textMessage.getText());
+                                    }
 
-                    if (messageGroupName != null){
+                                }
 
-                        LOG.infof("JMSX_GROUPD_ID = %s",messageGroupName);
-                    }
+                            }
 
-                    redelieveryCount = message.getIntProperty(JMSMessageProperties.JMSX_DELIVERY_COUNT);
+                            if (isDone(i)) {
 
-                    userID = message.getStringProperty(JMSMessageProperties.JMSX_USER_ID);
+                                messagesReceivedCnt = i;
 
-                    textMessage = (TextMessage) message;
+                                break;
+                            }
 
-                    if ( messageConsumerDelay >= 0 ){
+                            i++;
 
-                        delay(messageConsumerDelay);
-                    }
+                        } else if (message == null) {
 
-                    if ( sessionTransacted && ((  i % txBatchSize ) == 0)){
+                            LOG.infof("[%s] Receive() method timed out after '%d' seconds.", threadName, (receiveTimeout / 1000));
 
-                        if (!throwException) {
-
-                            //queueSession.commit();
-                            queueSession.rollback();
+                            break;
 
                         } else {
 
-                            queueSession.rollback();
-                        }
-                    }
+                            LOG.warnf("[%s] Received unknown message type. Ignoring.", threadName);
 
-                    messagesReceivedCnt = i;
-
-                    if  ((  i % logBatchSize) == 0){
-
-                        if (LOG.isInfoEnabled()){
-
-                            LOG.infof("[%s] Message '%d' consumed.",threadName,messagesReceivedCnt);
-
-                            if (logMessageText){
-
-                                LOG.infof("[%s] Text - %s",threadName,textMessage.getText());
-
-                            }
-
-                        } else if (LOG.isTraceEnabled()) {
-
-                            if (isLargeMessage(message)){
-
-                                LOG.tracef("[%s] Message %d consumed. Message size %d",threadName,messagesReceivedCnt,getBodySize(message));
-
-                            } else {
-
-                                LOG.tracef("[%s] Message '%d' consumed. Message text '%s'", threadName, messagesReceivedCnt, textMessage.getText());
-                            }
+                            break;
 
                         }
+                    } // end of while loop
 
-                    }
+                    finishTime = System.currentTimeMillis();
 
-                    if (isDone(i)){
-
-                        messagesReceivedCnt = i;
-
-                        break;
-                    }
-
-                    i++;
-
-                } else if ( message == null){
-
-                    LOG.infof("[%s] Receive() method timed out after '%d' seconds.",threadName,(receiveTimeout / 1000));
-
-                    // this a condition when no messages have been received at all
-                    if ( message == null && i == 1) {
-
-                        messageCount = 0;
-
-                    }
+                    totalTime = finishTime - startTime;
 
                     break;
 
-                } else {
+                } catch (JMSException jmsException) {
 
-                    LOG.warnf("[%s] Received unknown message type. Ignoring.",threadName);
-
-                    break;
+                    LOG.errorf(jmsException, "Error while sending messages");
 
                 }
-            }
 
-            finishTime = System.currentTimeMillis();
-
-            totalTime = finishTime - startTime;
-
-        } catch (JMSException jmsEx) {
-
-            throw new JMSClientException("[" + threadName + "] Exiting while consuming messages. ",jmsEx);
-
-        } catch (Exception ex){
-
-            throw new JMSClientException("[" + threadName + "] Exiting while consuming messages. ",ex);
+            } while(reconn <= reconnectAttempts);
 
         } finally {
 
@@ -339,7 +294,6 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
                 LOG.errorf(jmsEx,"[%s] Got JMS Exception while cleaning up JMS resources - ", threadName);
 
-                throw new JMSClientException("[" + threadName + "] Exiting while cleaning up JMS resources.",jmsEx);
             }
         }
 
