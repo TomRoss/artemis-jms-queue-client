@@ -146,7 +146,7 @@ public class ArtemisProducerImpl implements ArtemisProducer {
 
     public boolean init() throws Exception {
         int i = 1;
-        while( i <= reconnectAttempts) {
+         do {
 
             if (createJMSObjects()){
 
@@ -154,14 +154,14 @@ public class ArtemisProducerImpl implements ArtemisProducer {
 
             } else {
 
-                LOG.warnf("[%s] Failed to connect, retrying %d. Total retry attempts %d, reconnect delay %d milliseconds",threadName,i,Settings.getReconnectAttempts(),Settings.getReconnectDelay());
+                LOG.warnf("[%s] Failed to connect, retrying %d time. Total retry attempts %d, reconnect delay %d milliseconds",threadName,i,Settings.getReconnectAttempts(),Settings.getReconnectDelay());
 
                 Helper.doDelay(Settings.getReconnectDelay());
 
             }
 
             i++;
-        }
+        } while( i <= reconnectAttempts);
 
         return false;
     }

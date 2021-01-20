@@ -139,12 +139,6 @@
                     <executable>java</executable>
                     <workingDirectory>${project.build.directory}/exec-working-directory</workingDirectory>
                     <mainClass>org.acme.activemq.jms.client.Main</mainClass>
-                    <!-- <systemProperties>
-                        <systemProperty>
-                            <key>java.logging.config.file</key>
-                            <value>./helloworld-jms-logging.properties</value>
-                        </systemProperty>
-                    </systemProperties> -->
                 </configuration>
             </plugin>
 

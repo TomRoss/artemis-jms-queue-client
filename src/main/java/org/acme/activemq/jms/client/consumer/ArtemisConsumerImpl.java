@@ -4,21 +4,14 @@ package org.acme.activemq.jms.client.consumer;
 
 import org.acme.activemq.jms.client.ArtemisConsumer;
 import org.acme.activemq.jms.client.Settings;
+import org.acme.activemq.jms.client.producer.ArtemisProducerImpl;
 import org.acme.activemq.jms.client.utils.*;
 
 import org.apache.activemq.artemis.api.core.client.ClientMessage;
 import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 import org.jboss.logging.Logger;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 import javax.naming.NamingException;
 
 
@@ -71,6 +64,10 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     private QueueReceiver queueReceiver = null;
     private QueueSession queueSession = null;
     private TextMessage textMessage = null;
+    private final ExceptionListener exceptionListener = new ArtemisConsumerImpl.ConnectionErrorHandle();
+
+    private boolean firsTime = true;
+    private boolean reinitialiseFactory = false;
 
     public ArtemisConsumerImpl(){
 
@@ -456,5 +453,126 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
         }
 
+    }
+
+    private boolean createJMSObjects() {
+
+        try {
+
+            LOG.infof("[%s] Creating JMS resources", threadName);
+
+            if (firsTime) {
+
+                qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
+
+                if (!Settings.getReInitiliseFactory()){
+                    firsTime = false;
+                }
+
+            }
+
+            queueConnection = qcf.createQueueConnection(Settings.getUserName(), Settings.getPassword());
+
+            queueConnection.setExceptionListener(exceptionListener);
+
+            LOG.infof("[%s] Connection started. Starting receiving messages.", threadName);
+
+            if (this.sessionTransacted) {
+
+                queueSession = queueConnection.createQueueSession(true, Session.SESSION_TRANSACTED);
+
+            } else {
+
+                queueSession = queueConnection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+            }
+
+            LOG.infof("[%s] Created queue session '%s'.", threadName, Helper.sessionTypeToString(queueSession.getAcknowledgeMode()));
+
+
+
+            queue = connectionManager.getDestination(this.queueName);
+
+            queueReceiver = queueSession.createReceiver(queue);
+
+            LOG.infof("[%s] Queue sender for queue '%s' created.", threadName, queueReceiver.getQueue().getQueueName());
+
+            return true;
+
+        } catch (JMSException jmsException) {
+
+            LOG.errorf(jmsException, "JMS Error");
+
+            return false;
+
+        } catch (NamingException namingException) {
+
+            LOG.errorf(namingException, "Naming Error");
+
+            return false;
+        }
+    }
+
+    private void disconnect() {
+
+        LOG.infof("[%s] Disconnect method called", threadName);
+
+        try {
+            if (queueReceiver != null) {
+
+                queueReceiver.close();
+                if (LOG.isDebugEnabled())
+                    LOG.debugf("[%s] Sender closed.", threadName);
+            }
+
+            if (queueSession != null) {
+
+                queueSession.close();
+                if (LOG.isDebugEnabled())
+                    LOG.debugf("[%s] Session closed.", threadName);
+            }
+
+            if (queueConnection != null) {
+
+                if (LOG.isDebugEnabled()) {
+
+                    LOG.debugf("[%s] Removing exception listener", threadName);
+                }
+
+                if (queueConnection.getExceptionListener() != null) {
+
+                    queueConnection.setExceptionListener(null);
+
+                }
+
+                queueConnection.close();
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debugf("[%s] Connection closed.", threadName);
+                }
+            }
+        } catch (JMSException jmsException) {
+
+            LOG.errorf(jmsException,"[%s] Got JMSException while disconnecting",threadName);
+
+
+        } finally {
+            //queueSender = null;
+            //queueSession = null;
+            //queueConnection = null;
+        }
+    }
+
+    class ConnectionErrorHandle implements ExceptionListener {
+        private Logger LOG = Logger.getLogger(ArtemisConsumerImpl.ConnectionErrorHandle.class);
+
+        @Override
+        public void onException(JMSException exception) {
+            LOG.warnf(exception, "[%s] * * * * Exception handler called on connection * * * *", threadName);
+
+            disconnect();
+
+            createJMSObjects();
+
+        }
     }
 }

@@ -84,6 +84,10 @@ public class Client {
 
             } else {
 
+               LOG.warnf("Client thread failed to start. Exiting.");
+
+               Settings.setExitStatus(-10);
+
                cLatch.shutDown();
 
                break;
@@ -93,7 +97,7 @@ public class Client {
 
       } catch (NamingException namingException) {
 
-         LOG.errorf(namingException,"[%s]Got NaimingException: ",Thread.currentThread().getName());
+         LOG.errorf(namingException,"[%s]Got NamingException: ",Thread.currentThread().getName());
 
          cLatch.shutDown();
 

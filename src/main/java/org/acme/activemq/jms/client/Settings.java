@@ -253,7 +253,7 @@ public class Settings {
    }
 
    public static int getReconnectAttempts(){
-      return Integer.parseInt(System.getProperty(RECONNECT_ATTEMPTS,"15"));
+      return Integer.parseInt(System.getProperty(RECONNECT_ATTEMPTS,"5"));
    }
 
    public static long getReconnectDelay(){
@@ -284,6 +284,12 @@ public class Settings {
    public static boolean getIgnoreRemoteCount(){
 
       return Boolean.parseBoolean(System.getProperty(IGNORE_REMOTE_COUNT,"true"));
+
+   }
+
+   public static void setExitStatus(int status){
+
+      exitStatus = status;
 
    }
 }
