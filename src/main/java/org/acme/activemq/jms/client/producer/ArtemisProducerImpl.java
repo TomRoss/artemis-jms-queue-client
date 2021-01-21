@@ -177,7 +177,6 @@ public class ArtemisProducerImpl implements ArtemisProducer {
             do{
 
                 try {
-                    //queueSender = queueSession.createSender(queue);
 
                     textMessage = queueSession.createTextMessage();
 
@@ -224,23 +223,9 @@ public class ArtemisProducerImpl implements ArtemisProducer {
 
                         }
 
-                        if (i < 30){
-
-                            textMessage.setStringProperty("queue_command","BA");
-
-                        } else if ( i > 30 && i < 60){
-
-                            textMessage.setStringProperty("queue_command","BB");
-
-                        } else if ( i > 60){
-
-                            textMessage.setStringProperty("queue_command","BC");
-                        }
-
-
                         if (dupDetect) {
 
-                            //textMessage.setStringProperty(org.apache.activemq.artemis.api.core.Message.HDR_DUPLICATE_DETECTION_ID.toString(),Long.toString(System.currentTimeMillis()));
+                            textMessage.setStringProperty(org.apache.activemq.artemis.api.core.Message.HDR_DUPLICATE_DETECTION_ID.toString(),Long.toString(System.currentTimeMillis()));
 
                         }
                         
@@ -302,6 +287,7 @@ public class ArtemisProducerImpl implements ArtemisProducer {
                     reconn++;
 
                 }
+
             } while (reconn <= reconnectAttempts);
 
         } finally {

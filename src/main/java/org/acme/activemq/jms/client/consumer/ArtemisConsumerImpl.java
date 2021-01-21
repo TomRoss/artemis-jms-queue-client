@@ -1,7 +1,6 @@
 package org.acme.activemq.jms.client.consumer;
 
 
-
 import org.acme.activemq.jms.client.ArtemisConsumer;
 import org.acme.activemq.jms.client.Settings;
 import org.acme.activemq.jms.client.producer.ArtemisProducerImpl;
@@ -43,7 +42,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     private int txBatchSize = 0;
     private int logBatchSize = 0;
     private int messageCount = 0;
-    private int remoteMessageCount= 0;
+    private int remoteMessageCount = 0;
     private int localMessageCount = 0;
     private int messagesReceivedCnt = 0;
     private int redelieveryCount = 0;
@@ -70,7 +69,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     private boolean firsTime = true;
     private boolean reinitialiseFactory = false;
 
-    public ArtemisConsumerImpl(){
+    public ArtemisConsumerImpl() {
 
         throwException = Settings.getMessageThrowException();
         messageGroupName = Settings.getMessageGroup();
@@ -97,7 +96,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     }
 
-    public ArtemisConsumerImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch, Results results){
+    public ArtemisConsumerImpl(ObjectStoreManager objectStoreManager, CountDownLatchWrapper latch, Results results) {
 
         this();
 
@@ -117,25 +116,25 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
     }
 
     @Override
-    public boolean init() throws  Exception {
+    public boolean init() throws Exception {
 
         int i = 1;
         do {
 
-            if (createJMSObjects()){
+            if (createJMSObjects()) {
 
                 return true;
 
             } else {
 
-                LOG.warnf("[%s] Failed to connect, retrying %d time. Total retry attempts %d, reconnect delay %d milliseconds",threadName,i,Settings.getReconnectAttempts(),Settings.getReconnectDelay());
+                LOG.warnf("[%s] Failed to connect, retrying %d time. Total retry attempts %d, reconnect delay %d milliseconds", threadName, i, Settings.getReconnectAttempts(), Settings.getReconnectDelay());
 
                 Helper.doDelay(Settings.getReconnectDelay());
 
             }
 
             i++;
-        } while( i <= reconnectAttempts);
+        } while (i <= reconnectAttempts);
 
         return false;
     }
@@ -145,25 +144,25 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
         if (LOG.isInfoEnabled()) {
 
-            LOG.infof("Cleaning up JMS resources",threadName);
+            LOG.infof("Cleaning up JMS resources", threadName);
 
         }
 
-        if ( queueReceiver != null){
+        if (queueReceiver != null) {
 
             queueReceiver.close();
             if (LOG.isDebugEnabled())
                 LOG.debug("Sender closed.");
         }
 
-        if ( queueSession != null){
+        if (queueSession != null) {
 
             queueSession.close();
             if (LOG.isDebugEnabled())
                 LOG.debug("Session closed.");
         }
 
-        if ( queueConnection != null){
+        if (queueConnection != null) {
 
             queueConnection.close();
             if (LOG.isDebugEnabled())
@@ -176,7 +175,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
         int i = 1;
         threadName = Thread.currentThread().getName();
 
-        LOG.infof("[%s] <<< Starting consumer thread >>>",threadName);
+        LOG.infof("[%s] <<< Starting consumer thread >>>", threadName);
 
         int reconn = 0;
 
@@ -210,7 +209,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
                             if (sessionTransacted && ((i % txBatchSize) == 0)) {
 
-                                    queueSession.commit();
+                                queueSession.commit();
 
                             }
 
@@ -277,7 +276,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
                 }
 
-            } while(reconn <= reconnectAttempts);
+            } while (reconn <= reconnectAttempts);
 
         } finally {
 
@@ -292,7 +291,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
             } catch (JMSException jmsEx) {
 
-                LOG.errorf(jmsEx,"[%s] Got JMS Exception while cleaning up JMS resources - ", threadName);
+                LOG.errorf(jmsEx, "[%s] Got JMS Exception while cleaning up JMS resources - ", threadName);
 
             }
         }
@@ -333,13 +332,13 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
             result.setMessagecount(messagesReceivedCnt);
 
-            results.setResult(threadName,result);
+            results.setResult(threadName, result);
 
         } catch (JMSClientException exitError) {
 
-            LOG.error("ERROR",exitError);
+            LOG.error("ERROR", exitError);
 
-            if (totalTime == 0){
+            if (totalTime == 0) {
                 totalTime = System.currentTimeMillis() - startTime;
             }
             //printResults(Thread.currentThread().getName(),totalTime,messageCount);
@@ -347,10 +346,9 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
         }
     }
 
-    public String sessionTypeToString(int type)
-    {
+    public String sessionTypeToString(int type) {
 
-        switch (type){
+        switch (type) {
             case Session.AUTO_ACKNOWLEDGE:
                 return "Auto-Acknowledge";
             case Session.CLIENT_ACKNOWLEDGE:
@@ -364,9 +362,9 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
         }
     }
 
-    private boolean isDone(int msgCount){
+    private boolean isDone(int msgCount) {
 
-        if (expectedMessagesCount == msgCount){
+        if (expectedMessagesCount == msgCount) {
 
             return true;
         }
@@ -375,7 +373,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     }
 
-    private boolean isLargeMessage(Message message){
+    private boolean isLargeMessage(Message message) {
 
         ActiveMQMessage msg = (ActiveMQMessage) message;
 
@@ -385,7 +383,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     }
 
-    private int getBodySize(Message message){
+    private int getBodySize(Message message) {
 
         ActiveMQMessage msg = (ActiveMQMessage) message;
 
@@ -395,15 +393,15 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     }
 
-    private void delay(long delay){
+    private void delay(long delay) {
 
         try {
 
             Thread.sleep(delay);
 
-        } catch(InterruptedException intEx){
+        } catch (InterruptedException intEx) {
 
-            LOG.warnf("[%s] No no no",threadName,intEx);
+            LOG.warnf("[%s] No no no", threadName, intEx);
 
         }
 
@@ -419,7 +417,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
                 qcf = connectionManager.getConnection(Settings.getConnectionFactoryName());
 
-                if (!Settings.getReInitiliseFactory()){
+                if (!Settings.getReInitiliseFactory()) {
                     firsTime = false;
                 }
 
@@ -441,7 +439,6 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
             }
 
             LOG.infof("[%s] Created queue session '%s'.", threadName, Helper.sessionTypeToString(queueSession.getAcknowledgeMode()));
-
 
 
             queue = connectionManager.getDestination(this.queueName);
@@ -506,7 +503,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
             }
         } catch (JMSException jmsException) {
 
-            LOG.errorf(jmsException,"[%s] Got JMSException while disconnecting",threadName);
+            LOG.errorf(jmsException, "[%s] Got JMSException while disconnecting", threadName);
 
 
         } finally {
