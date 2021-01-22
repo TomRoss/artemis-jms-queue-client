@@ -68,6 +68,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     private boolean firsTime = true;
     private boolean reinitialiseFactory = false;
+    private boolean timeOut = fasle;
 
     public ArtemisConsumerImpl() {
 
@@ -249,9 +250,13 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
                             i++;
 
+                            messagesReceivedCnt = i;
+
                         } else if (message == null) {
 
                             LOG.infof("[%s] Receive() method timed out after '%d' seconds.", threadName, (receiveTimeout / 1000));
+
+                            timeOut = true;
 
                             break;
 
@@ -265,6 +270,10 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
                     } // end of while loop
 
                     finishTime = System.currentTimeMillis();
+
+                    if (timeOut){
+                        finishTime = finishTime - receiveTimeout;
+                    }
 
                     totalTime = finishTime - startTime;
 
