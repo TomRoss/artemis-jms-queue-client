@@ -68,7 +68,7 @@ public class ArtemisConsumerImpl implements ArtemisConsumer, Runnable {
 
     private boolean firsTime = true;
     private boolean reinitialiseFactory = false;
-    private boolean timeOut = fasle;
+    private boolean timeOut = false;
 
     public ArtemisConsumerImpl() {
 
